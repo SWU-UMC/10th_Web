@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 // 1. DOM 요소 가져오기 (타입 단언 사용)
 const todoInput = document.getElementById('todo-input');
 const todoForm = document.getElementById('todo-form');
@@ -80,4 +79,3 @@ todoForm.addEventListener('submit', (e) => {
         renderTasks();
     }
 });
-//# sourceMappingURL=script.js.map

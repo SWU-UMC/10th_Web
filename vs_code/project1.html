@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>UMC Todo</title>
+    <style>
+    
+    li{
+        list-style-type: none;
+        display: flex;
+        justify-content: space-between; /* 텍스트 왼쪽, 버튼 오른쪽 */
+        margin-bottom: 10px;
+
+    }
+    
+    body {
+      background: #dfe6e9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    #container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      width: 350px;
+      text-align: center;
+    }
+
+    .input-box {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    input {
+      flex: 1;
+      padding: 5px;
+    }
+
+    button {
+      background: green;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    
+
+    section {
+      width: 80%;
+      list-style: none;
+      padding: 0;
+      margin-left: 50px;
+      justify-content: space-between;
+      display: flex;
+    }
+
+    
+  </style>
+  
+</head>
+<body>
+    
+    <div id="container">
+        <h1>YONG TODO</h1>
+        <input type="text" id="box" placeholder="할 일 입력">
+        <button id="add-btn">할 일 추가</button>
+        <section>
+            <div>
+                <h2>할 일</h2>
+                <ul id="todo-list1"></ul>
+            </div>
+            
+    
+            <div>
+                <h2>완료</h2>
+                <ul id="todo-list2"></ul>
+            </div>
+            
+        </section>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

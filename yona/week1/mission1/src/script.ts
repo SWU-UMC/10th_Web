@@ -76,16 +76,6 @@ const createTodoElement = (todo: Todo, isDone: boolean): HTMLLIElement =>{
     return li;
 };
 
-
-
-
-    /*<ul id="todo-list" class="render-container__list">
-                <li class="render-container__item">
-                <p class="render-container__item-text">123</p>
-                <button class=""render-container__item-button>삭제</button>
-            </li>
-            </ul>*/
-
 todoForm.addEventListener('submit', (event: Event): void =>{
     event.preventDefault();
     const text = getTodoText();

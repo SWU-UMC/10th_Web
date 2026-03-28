@@ -1,10 +1,10 @@
 import './App.css';
-import Todo from './components/Todo.tsx';
+import ContextPage from './m2/ContextPage';
 
 function App() {
   return ( 
     <div>
-      <Todo></Todo>
+      <ContextPage />
     </div>
   );
 }

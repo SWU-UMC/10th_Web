@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<!--이 문서는 HTML5로 작성되었다는 선언문-->
+<html lang="en">
+<!--웹 문서의 시작을 알리는 태그, 문서의 기본 언어가 영어-->
+<head>
+    <!--문서의 설정,정보를 담는 부분-->
+    <meta charset="UTF-8">
+    <!--글자 인코딩 방식, UTF-8은 한글,영어,이모지까지 폭넓은 지원-->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!--인터넷 익스플로러에서도 최신 엔진을 사용하도록 지정-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--모바일.태블릿 화면 크기에 맞게 콘텐츠 조정-->
+    <title>내 첫 번째 웹페이지</title>
+    <!--웹 브라우저 탭에 표시되는 제목-->
+</head>
+<body>
+    <!--실제 화면에 보이는 내용/텍스트,이미지,버튼,링크 등 모든 콘텐츠 여기에-->
+    <div>나는 요나. HTML 공부 시작한다.</div>
+</body>
+</html>
+
+<!--멀티미디어 태그 예시-->
+<img src="profile.jpg" alt="프로필사진">
+<video controls>
+    <source src="movie.mp4" type="video/mp4">
+</video>
+<audio controls>
+    <source src="music.mp3" type="audio/mp3">
+</audio>
+
+<!-- p (paragraph 단락,절) 시작/종료 태그로 이루어짐-->
+<p>내용</p>
+
+<!-- <태그 속성1='값1' 속성2='값2'>콘텐츠 보이는 요소</태그> -->
+ <p class="highlight" id="intro">안녕하세요!</p>
+ <img src="matthew.jpg" alt="매튜 사진" width="200">
+ <a href="http://www.youtube.com" target="_blank"></a>
+
+ <!--태그 안에 태그 중첩 요소-->
+ <p>안녕하세요 <strong>고구마!</strong></p>
+ <div>
+    <h2>제목</h2>
+    <p>내용이 들어갑니다.</p>
+ </div>
+
+ <!--콘텐츠가 없는 태그도 사용가능-->
+ <img src="sweet-potato.png" alt="고구마" />
+ <br />
+ <hr />
+ <!--콘텐츠가 없는 태그들은 스스로 닫힘-->

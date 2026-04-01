@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UMC Study Plan</title>
+    <style>
+        /* 2. 스타일 기본값 설정 */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            padding-top: 50px;
+        }
+
+        .container {
+            width: 500px;
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 2rem;
+        }
+
+        .input-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 2rem;
+        }
+
+        #todo-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        #todo-input:focus {
+            border-color: #4a90e2;
+        }
+
+        .lists-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .list-section h3 {
+            font-size: 1.1rem;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 8px;
+            color: #555;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #fafafa;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 5px;
+        }
+
+        button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .complete-btn { background-color: #e1f5fe; color: #039be5; }
+        .delete-btn { background-color: #ffebee; color: #e53935; }
+
+        /* 완료 상태 시각적 차이 지정 */
+        #done-list li span {
+            text-decoration: line-through;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>UMC Study Plan</h1>
+    </header>
+
+    <section class="input-section">
+        <input type="text" id="todo-input" placeholder="할 일을 입력하고 Enter!" autofocus>
+    </section>
+
+    <main class="lists-wrapper">
+        <section class="list-section">
+            <h3>해야 할 일</h3>
+            <ul id="todo-list"></ul>
+        </section>
+
+        <section class="list-section">
+            <h3>해낸 일</h3>
+            <ul id="done-list"></ul>
+        </section>
+    </main>
+</div>
+
+<script>
+    /**
+     * 3~6. JS 로직 (이벤트 바인딩, DOM 조작, 예외처리, 리팩토링)
+     */
+    const input = document.getElementById('todo-input');
+    const todoList = document.getElementById('todo-list');
+    const doneList = document.getElementById('done-list');
+
+    // 이벤트 바인딩: Enter 키 입력
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            handleNewTodo();
+        }
+    });
+
+    // 리팩토링: 입력 처리 메인 함수
+    function handleNewTodo() {
+        const text = input.value.trim();
+
+        // 5. 데이터 검증/예외처리
+        if (!text) {
+            alert("할 일을 입력해주세요.");
+            return;
+        }
+
+        createTodoElement(text);
+        input.value = ''; // 입력창 비우기
+    }
+
+    // 4. DOM 조작: 생성 및 추가
+    function createTodoElement(text) {
+        const li = document.createElement('li');
+        
+        const span = document.createElement('span');
+        span.textContent = text;
+
+        const btnGroup = document.createElement('div');
+        btnGroup.className = 'btn-group';
+
+        const completeBtn = document.createElement('button');
+        completeBtn.textContent = '완료';
+        completeBtn.className = 'complete-btn';
+        completeBtn.onclick = () => moveTodo(li);
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = '삭제';
+        deleteBtn.className = 'delete-btn';
+        deleteBtn.onclick = () => li.remove(); // 4. 삭제 로직
+
+        btnGroup.appendChild(completeBtn);
+        btnGroup.appendChild(deleteBtn);
+        
+        li.appendChild(span);
+        li.appendChild(btnGroup);
+
+        todoList.appendChild(li); // 해야 할 일 목록에 추가
+    }
+
+    // 4. DOM 조작: 이동 로직 (완료/취소)
+    function moveTodo(li) {
+        const currentParent = li.parentElement.id;
+        const btn = li.querySelector('.complete-btn');
+
+        if (currentParent === 'todo-list') {
+            // 해야 할 일 -> 해낸 일
+            btn.textContent = '취소';
+            doneList.appendChild(li);
+        } else {
+            // 해낸 일 -> 해야 할 일 (다시 복구)
+            btn.textContent = '완료';
+            todoList.appendChild(li);
+        }
+    }
+</script>
+
+</body>
+</html>

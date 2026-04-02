@@ -4,7 +4,7 @@ import { useState } from "react";
 
 interface MovieCardProps {
     movie: Movie;
-    category?: string;
+    category?: string;  //이걸 수정함
 }
     
 //onMouseEnter은 영화 카드에 마우스가 올라갔는지 여부에 따라 isHovered 상태를 true로 변경하는 이벤트 핸들러, onMouseLeave는 마우스가 영화 카드에서 떠났을 때 isHovered 상태를 false로 변경

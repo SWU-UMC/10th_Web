@@ -23,7 +23,6 @@ const TodoForm = () => {
                 type='text'
                 className='todo-container__input'
                 placeholder='할 일 입력'
-                required
             />
             <button type='submit' className='todo-container__button'>
                 할 일 추가

@@ -12,7 +12,7 @@ export default function ThemeContent() {
         isLightMode ? 'bg-white' : 'bg-gray-800'
     )}>
         <h1 className={clsx(
-            'text-wxl font-bold',
+            'text-2xl font-bold',
             isLightMode ? 'text-black' : 'text-white'
         )}>
             Theme Content

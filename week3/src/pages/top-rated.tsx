@@ -1,6 +1,7 @@
 import type { Movie, MovieResponse } from '../types/movie';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 const TopRatedPage = () => {
   const [movies, setMovies] = useState<Movie[]>([]);
@@ -13,6 +14,7 @@ const TopRatedPage = () => {
   useEffect(() => {
     const fetchMovies = async () => {
         setIsLoading(true);
+        setIsError(false);
         try {
             const { data } = await axios.get<MovieResponse>(
             `https://api.themoviedb.org/3/movie/top_rated?language=KR&page=${page}`,
@@ -82,23 +84,25 @@ const TopRatedPage = () => {
         {/* 영화 */}
         <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
         {movies?.map((movie) => (
-            <li 
-            key={movie.id} 
-            className="relative group overflow-hidden rounded-lg cursor-pointer bg-gray-900"
-            >
-            <img
-                src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                alt={movie.title}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110 group-hover:blur-sm"
-            />
-            <div className="absolute inset-0 bg-black/70 flex flex-col justify-center items-center p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <h2 className="text-white text-center font-bold text-lg mb-2">
-                {movie.title}
-                </h2>
-                <p className="text-white text-xs text-center line-clamp-3">
-                {movie.overview || "줄거리 정보가 없습니다."}
-                </p>
-            </div>
+            <li key={movie.id}>
+              <Link to={`/movies/${movie.id}`} className="block">
+                <div className="relative group overflow-hidden rounded-xl cursor-pointer bg-gray-900 shadow-md">
+                  <img
+                      src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                      alt={movie.title}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 group-hover:blur-sm"
+                  />
+
+                  <div className="absolute inset-0 bg-black/70 flex flex-col justify-center items-center p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <h2 className="text-white text-center font-bold text-lg mb-2">
+                        {movie.title}
+                      </h2>
+                      <p className="text-white text-[11px] text-center line-clamp-4">
+                        {movie.overview || "줄거리 정보가 없습니다."}
+                      </p>
+                  </div>
+                </div>
+              </Link>
             </li>
         ))}
         </ul>

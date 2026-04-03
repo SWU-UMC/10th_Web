@@ -1,5 +1,6 @@
 import './App.css';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import MovieDetailPage from './pages/movie-detail.tsx';
 
 // 1) 만든 페이지 import
 import HomePage from './pages/home';
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
         path: 'upcoming',
         element: <Upcoming />,
       },
+      {
+        path: 'movies/:movieId',
+        element: <MovieDetailPage />,
+      }
     ],
   },
 ]);

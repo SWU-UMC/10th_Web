@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Aido - 고양이 친구들</title>
+    <style>
+        .neo-shadow { box-shadow: 6px 6px 0px 0px rgba(0,0,0,1); }
+        .active-lang { background-color: #FF5733 !important; color: white !important; }
+        body { background-color: #fdfbf7; }
+    </style>
+</head>
+<body class="font-sans text-gray-900">
+
+    <nav class="max-w-6xl mx-auto mt-6 px-4">
+        <div class="flex items-center justify-between bg-white border-[3px] border-black rounded-full px-6 py-3 neo-shadow">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-[#FF5733] border-2 border-black rounded-xl flex items-center justify-center overflow-hidden">
+                    <span class="text-xl">🐱</span>
+                </div>
+                <span class="text-2xl font-black tracking-tight">Aido</span>
+            </div>
+
+            <ul class="hidden md:flex items-center gap-8 font-bold text-gray-700">
+                <li><a href="#" class="hover:text-black">고양이 친구들</a></li>
+                <li><a href="#" class="text-[#FF5733] hover:underline underline-offset-4">출시 알람 받기</a></li>
+            </ul>
+
+            <div class="flex items-center gap-2 bg-gray-100 border-2 border-black rounded-full p-1" role="group" aria-label="언어 선택">
+                <span class="hidden sm:inline text-[10px] font-black text-gray-400 ml-2 uppercase">Language</span>
+                <div class="flex bg-white border border-gray-300 rounded-full overflow-hidden" id="lang-switcher">
+                    <button onclick="changeLang('ko')" class="lang-btn active-lang px-3 py-1 text-xs font-black rounded-full transition-colors">KO</button>
+                    <button onclick="changeLang('en')" class="lang-btn px-3 py-1 text-xs font-black text-gray-400 hover:text-black transition-colors">EN</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-4 mt-16">
+        <header class="text-center">
+            <h1 class="text-5xl md:text-7xl font-black leading-tight mb-6">
+                세상의 모든 <br/>
+                <span class="text-[#FF5733] underline decoration-black decoration-8 underline-offset-8">고양이 친구들</span>
+            </h1>
+            <p class="text-xl font-bold text-gray-600 mb-10">
+                Aido와 함께 당신의 고양이를 위한 특별한 일상을 기록하세요.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <button class="bg-[#FF5733] text-white px-8 py-4 rounded-full border-[3px] border-black font-black text-xl neo-shadow hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all">지금 시작하기</button>
+                <button class="bg-white text-black px-8 py-4 rounded-full border-[3px] border-black font-black text-xl neo-shadow hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all">더 알아보기</button>
+            </div>
+        </header>
+
+        <section class="my-20 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <article class="bg-yellow-300 border-[3px] border-black p-8 rounded-[2rem] neo-shadow">
+                <div class="text-4xl mb-4">🧶</div>
+                <h3 class="text-2xl font-black mb-2">간편한 기록</h3>
+                <p class="font-bold text-gray-800">매일의 사료량과 배변 상태를 터치 한 번으로 기록하세요.</p>
+            </article>
+            
+            <article class="bg-blue-300 border-[3px] border-black p-8 rounded-[2rem] neo-shadow">
+                <div class="text-4xl mb-4">🏥</div>
+                <h3 class="text-2xl font-black mb-2">건강 알림</h3>
+                <p class="font-bold text-gray-800">예방 접종일과 검진일을 잊지 않게 미리 알려드려요.</p>
+            </article>
+
+            <article class="bg-green-300 border-[3px] border-black p-8 rounded-[2rem] neo-shadow">
+                <div class="text-4xl mb-4">📸</div>
+                <h3 class="text-2xl font-black mb-2">집사 커뮤니티</h3>
+                <p class="font-bold text-gray-800">다른 집사들과 정보를 공유하고 소통할 수 있습니다.</p>
+            </article>
+        </section>
+    </main>
+
+    <script>
+        // 현재 경로(언어)에 따라 색상을 바꿔주는 함수
+        function changeLang(lang) {
+            const btns = document.querySelectorAll('.lang-btn');
+            btns.forEach(btn => {
+                btn.classList.remove('active-lang');
+                btn.classList.add('text-gray-400');
+            });
+
+            // 클릭한 언어 버튼 활성화
+            const activeBtn = event.currentTarget;
+            activeBtn.classList.add('active-lang');
+            activeBtn.classList.remove('text-gray-400');
+            
+            console.log("현재 언어 경로:", "/" + lang);
+        }
+    </script>
+</body>
+</html>

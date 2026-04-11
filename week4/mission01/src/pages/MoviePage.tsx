@@ -29,7 +29,7 @@ export default function MoviePage() {
                     },
                 }
               );
-
+                    console.log(data);
                     setMovies(data.results);
                 } catch {
                     setIsError(true);

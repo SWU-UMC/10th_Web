@@ -1,4 +1,4 @@
-import { Navigate, useParams } from 'react-router-dom';
+
 import type { Movie } from '../types/movie';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';

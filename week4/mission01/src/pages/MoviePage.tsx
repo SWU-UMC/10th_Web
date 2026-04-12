@@ -1,45 +1,21 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
-import type { MovieResponse, Movie } from "../types/movie";
+import { useState } from "react";
+import type { MovieResponse } from "../types/movie";
 import MovieCard from "../components/MovieCard";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { useParams } from "react-router-dom";
+import useCustomFetch from "../hooks/useCustomFetch"; //커스텀 훅
+
 
 export default function MoviePage() {
-    const [movies, setMovies] = useState<Movie[]>([]);
-    //1. 로딩상태
-    const [isPending, setIsPending] = useState(true);
-    //2. 에러상태
-    const [isError, setIsError] = useState(false);
-    //3 페이지
     const [page, setPage] = useState(1);
+    const { category } = useParams<{ category: string }>();
 
-    const {category} = useParams <{category: string}>();
+    //커스텀 훅 사용
+    const { data, isPending, isError } = useCustomFetch<MovieResponse>(
+        `https://api.themoviedb.org/3/movie/${category}?language=ko-KR&page=${page}`
+    );
 
-    useEffect(() => {
-        const fetchMovies = async () => {
-        setIsPending(true);
-
-            try {
-                const { data } = await axios.get<MovieResponse>(
-                    `https://api.themoviedb.org/3/movie/${category}?language=ko-KR&page=${page}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${import.meta.env.VITE_TMDB_KEY}`,
-                    },
-                }
-              );
-                    console.log(data);
-                    setMovies(data.results);
-                } catch {
-                    setIsError(true);
-                } finally {
-                    setIsPending(false);
-                }
-            }; 
-
-        fetchMovies();
-    }, [page, category]);
+    const movies = data?.results || []; //데이터가 없을 때 대비 빈 배열 기본값 설정
 
     if (isError) {
         return (

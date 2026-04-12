@@ -1,50 +1,26 @@
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from 'react';
-import axios from "axios";
 import type { MovieDetail, MovieCreditsResponse } from '../types/movie';
 import { LoadingSpinner } from '../components/LoadingSpinner';
+import useCustomFetch from "../hooks/useCustomFetch";
+
 
 export default function MovieDetailPage() {
     const { movieId } = useParams<{ movieId: string }>();
-    const [movie, setMovie] = useState<MovieDetail | null>(null);
-    const [credits, setCredits] = useState<MovieCreditsResponse | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [isError, setIsError] = useState(false);
 
-    useEffect(() => {
-        const fetchMovieData = async () => {
-            try {
-                setLoading(true);
-                setIsError(false);
+    // 영화 상세 정보 가져오기
+    const { data: movie, isPending: isMovieLoading, isError: isMovieError } = 
+        useCustomFetch<MovieDetail>(`https://api.themoviedb.org/3/movie/${movieId}?language=ko-KR`);
 
-                const config = {
-                    headers: {
-                        Authorization: `Bearer ${import.meta.env.VITE_TMDB_KEY}`,
-                    },
-                };
+    // 출연진 정보 가져오기
+    const { data: credits, isPending: isCreditsLoading, isError: isCreditsError } = 
+        useCustomFetch<MovieCreditsResponse>(`https://api.themoviedb.org/3/movie/${movieId}/credits?language=ko-KR`);
 
-                // 상세 정보와 출연진 정보를 동시에 호출
-                const [detailRes, creditsRes] = await Promise.all([
-                    axios.get<MovieDetail>(`https://api.themoviedb.org/3/movie/${movieId}?language=ko-KR`, config),
-                    axios.get<MovieCreditsResponse>(`https://api.themoviedb.org/3/movie/${movieId}/credits?language=ko-KR`, config)
-                ]);
+    // 로딩 상태 합치기
+    const isPending = isMovieLoading || isCreditsLoading;
+    // 에러 상태 합치기
+    const isError = isMovieError || isCreditsError;
 
-                setMovie(detailRes.data);
-                setCredits(creditsRes.data);
-            } catch (error) {
-                console.error("상세페이지 에러:", error);
-                setIsError(true);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        if (movieId) {
-            fetchMovieData();
-        }
-    }, [movieId]);
-
-    if (loading) {
+    if (isPending) {
         return (
             <div className="flex items-center justify-center h-screen bg-black">
                 <LoadingSpinner />
@@ -98,7 +74,7 @@ export default function MovieDetailPage() {
                     <h2 className="text-2xl font-bold mb-4 border-l-4 border-[#dda5e3] pl-4">줄거리</h2>
                     <p className="text-lg text-gray-300 leading-relaxed mb-10">{movie.overview || "등록된 줄거리가 없습니다."}</p>
 
-                    <h2 className="text-2xl font-bold mb-6 border-l-4 border-[#dda5e3] pl-4">출연진</h2>
+                    <h2 className="text-2xl font-bold mb-6 border-l-4 border-[#dda5e3] pl-4">감독/출연진</h2>
                     <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-6">
                         {credits?.cast.slice(0, 10).map((person) => (
                             <div key={person.id} className="group">

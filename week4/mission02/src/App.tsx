@@ -5,6 +5,7 @@ import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
 import HomeLayout from './layouts/HomeLayout'
+import MyPage from './pages/MyPage'
 
 
 // 1.홈페이지
@@ -20,6 +21,7 @@ const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'signup', element: <SignupPage /> },
+      { path: 'mypage', element: <MyPage /> },
     ]
   },
 ])

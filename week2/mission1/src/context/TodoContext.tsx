@@ -9,8 +9,8 @@ interface ITodoContext{
     deleteTodo: (todo: TTodo) => void;
 }
 
-export const TodoContext = createContext<ITodoContext | undefined>
-(undefined);
+export const TodoContext = createContext<ITodoContext | null>
+(null);
 
 export const TodoProvider =({children}:
     PropsWithChildren) => {

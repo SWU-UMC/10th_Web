@@ -58,7 +58,7 @@ const SignupPage = () => {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-gray-50 px-4">
       <div className="w-full max-w-xs flex flex-col gap-4">
-        <h1 className="text-2xl font-bold text-center mb-2 text-gray-800">로그인</h1>
+        <h1 className="text-2xl font-bold text-center mb-2 text-gray-800">새로운 계정</h1>
 
         <div className="flex flex-col gap-3">
           <input //이메일 칸

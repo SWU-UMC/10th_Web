@@ -1,4 +1,4 @@
-import { createContext, useState, useContext } from 'react';
+import { createContext, useState, useContext, type PropsWithChildren } from 'react';
 import type { TTodo } from '../types/todo';
 
 // 1. 어떤 데이터와 함수들을 관리할 건지 타입 정의
@@ -14,7 +14,7 @@ interface ITodoContext {
 const TodoContext = createContext<ITodoContext | undefined>(undefined);
 
 // 3. 우산(Provider) 만들기 - 데이터들을 품고 있는 역할
-export const TodoProvider = ({ children }: { children: React.ReactNode }) => {
+export const TodoProvider = ({ children }: PropsWithChildren) => {
   const [todos, setTodos] = useState<TTodo[]>([]);
   const [doneTodos, setDoneTodos] = useState<TTodo[]>([]);
 

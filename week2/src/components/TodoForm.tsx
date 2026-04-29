@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTodo } from '../context/TodoContext';
 
 const TodoForm = () => {
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState<string>(''); 
   const { addTodo } = useTodo(); 
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {

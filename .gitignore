@@ -1,0 +1,15 @@
+
+**/node_modules/
+**/dist/
+**/.pnpm-debug.log
+
+**/.env
+# SQLite 데이터베이스 파일 무시
+**/*.db
+**/*.db-journal
+
+
+.vscode/
+.DS_Store
+Thumbs.db
+week5/server/

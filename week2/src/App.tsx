@@ -1,27 +1,29 @@
-import { useState } from 'react';
-import { TodoProvider } from './context/TodoContext';
+import { useTheme, THEME } from './context/ThemeProvider';
+import ThemeToggleButton from './components/ThemeToggleButton';
 import TodoInput from './components/TodoInput';
 import TodoList from './components/TodoList';
-import { type Task } from './types';
 import './App.css';
 
 function App() {
+  const { theme } = useTheme(); // 👈 현재 테마 가져오기
 
- return (
-    <TodoProvider>
+  return (
+    // 테마 상태에 따라 클래스 동적 변경
+    <div className={`todo-app ${theme === THEME.DARK ? 'dark-mode' : 'light-mode'}`}>
       <div className="todo-container">
-        <h1 className="todo-container__header">YONG TODO</h1>
+        <header className="todo-header">
+          <h1 className="todo-container__header">YONG TODO <ThemeToggleButton /> </h1>
+        </header>
 
         <TodoInput />
 
-        <div className ="render-container">
+        <div className="render-container">
           <TodoList title="할 일" type="todo" />
           <TodoList title="완료" type="done" />
         </div>
       </div>
-
-    </TodoProvider>
+    </div>
   );
 }
 
-export default App
+export default App;

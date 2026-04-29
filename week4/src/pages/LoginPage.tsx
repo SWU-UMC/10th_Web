@@ -24,7 +24,6 @@ const LoginPage = () => {
         } catch (error) {
             alert((error as Error)?.message || 'An error occurred');
         }
-        console.log(Response);
     };
 
     //오류가 하나라도 있거나,입력값이 비어있으면 버튼을 비활성화

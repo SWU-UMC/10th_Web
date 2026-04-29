@@ -5,12 +5,16 @@ const MyPage=()=>{
     const [data,setData]=useState<ResponseMyInfoDto | null>(null);
     useEffect(() => {
         const getData = async() =>{
-            const response = await getMyInfo();
-            console.log(response);
+            try{
+                const response = await getMyInfo();
+                setData(response);
+            } catch (error) {
+                console.error(error);
+            }
         };
 
         getData();
-    }, [])
+    }, []);
     return <div>
         {data?.data?.name} {data?.data?.email}
     </div>

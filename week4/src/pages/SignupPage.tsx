@@ -1,7 +1,7 @@
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { type SubmitHandler, useForm } from "react-hook-form";
-import { postSignup } from "../apis/auth";
+
 
 const schema = z.object({
     email: z.string().email({ message: "올바른 이메일 형식이 아닙니다." }),
@@ -47,7 +47,6 @@ const SignupPage = () => {
     const onSubmit: SubmitHandler<FormField> = async (data) => {
         const { passwordCheck, ...rest } = data;
 
-        const response = await postSignup(rest);
         console.log(rest);
     };
     return (
@@ -109,7 +108,3 @@ const SignupPage = () => {
     );
 };
 export default SignupPage;
-
-function register(arg0: string): import("react/jsx-runtime").JSX.IntrinsicAttributes & import("react").ClassAttributes<HTMLInputElement> & import("react").InputHTMLAttributes<HTMLInputElement> {
-    throw new Error("Function not implemented.");
-}

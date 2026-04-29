@@ -1,9 +1,9 @@
-import { clsx } from 'clsx';
-import { useTheme } from '../context/ThemeContext';
+import  clsx  from 'clsx';
+import { useTheme, THEME } from '../context/ThemeContext'; 
 
 const ThemeToggleButton = () => {
   const { theme, toggleTheme } = useTheme();
-  const isLightMode = theme === 'light';
+  const isLightMode = theme === THEME.LIGHT; 
 
   return (
     <button

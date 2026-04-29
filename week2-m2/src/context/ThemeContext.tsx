@@ -1,20 +1,25 @@
-import { createContext, useState, useContext } from 'react';
+import { createContext, useState, useContext, type PropsWithChildren } from 'react';
 
-// 1. 타입 정의
+
+export const THEME = {
+  LIGHT: 'light',
+  DARK: 'dark',
+} as const;
+
+type TTheme = typeof THEME[keyof typeof THEME];
 interface IThemeContext {
-  theme: 'light' | 'dark';
+  theme: TTheme;
   toggleTheme: () => void;
 }
 
 
-const ThemeContext = createContext<IThemeContext | undefined>(undefined);
+const ThemeContext = createContext<IThemeContext | null>(null);
 
+export const ThemeProvider = ({ children }: PropsWithChildren) => {
 
-export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
-
+  const [theme, setTheme] = useState<TTheme>(THEME.LIGHT);
   const toggleTheme = () => {
-    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
+    setTheme((prev) => (prev === THEME.LIGHT ? THEME.DARK : THEME.LIGHT));
   };
 
   return (
@@ -23,7 +28,6 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     </ThemeContext.Provider>
   );
 };
-
 
 export const useTheme = () => {
   const context = useContext(ThemeContext);

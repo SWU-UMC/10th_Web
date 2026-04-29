@@ -1,45 +1,48 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { signupSchema, type SignupFormValues } from '../utils/validate';
-
-interface Ball { id: number; x: number; y: number; vx: number; vy: number; size: number; color: string; }
+import { useBallAnimation } from '../hooks/useBallAnimation'; 
+import api from '../apis/axios'; 
 
 const SignupPage = () => {
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
-  const [balls, setBalls] = useState<Ball[]>([]);
   const [step, setStep] = useState(1);
 
   
+  const balls = useBallAnimation(containerRef);
+
   const { register, handleSubmit, setError, clearErrors, watch, formState: { errors } } = useForm<SignupFormValues>();
-
   const formData = watch(); 
-  const onSignupSubmit = (data: SignupFormValues) => {
-   
-    const result = signupSchema.safeParse(data);
-    
-   
-    if (!result.success) {
-      result.error.issues.forEach((issue) => {
-        setError(issue.path[0] as any, { message: issue.message });
-      });
-      return;
-    }
-
-    
-    console.log('회원가입 성공:', data);
-    alert('회원가입 성공! 로그인 페이지로 이동합니다.');
-    navigate('/login');
-  };
 
   
+  const onSignupSubmit = async (data: SignupFormValues) => {
+    try {
+      
+      const response = await api.post('/auth/signup', {
+        name: data.nickname, 
+        email: data.email,
+        password: data.password,
+      });
+
+      if (response.data.status) {
+        alert('회원가입 성공! 로그인 페이지로 이동합니다.');
+        navigate('/login');
+      }
+    } catch (error: any) {
+      
+      const message = error.response?.data?.message || '회원가입 중 오류가 발생했습니다.';
+      alert(message);
+    }
+  };
+
+ 
   const handleNext = () => {
     clearErrors();
     const result = signupSchema.safeParse(formData);
     
     if (!result.success) {
-      
       const stepErrors = result.error.issues.filter(issue => {
         if (step === 1) return issue.path.includes("email");
         if (step === 2) return issue.path.includes("password") || issue.path.includes("confirmPassword");
@@ -54,31 +57,6 @@ const SignupPage = () => {
     setStep(step + 1);
   };
 
- 
-  useEffect(() => {
-    const initialBalls: Ball[] = [
-      { id: 1, x: 100, y: 100, vx: 3, vy: 2, size: 80, color: 'bg-cyan-400' },
-      { id: 2, x: 300, y: 200, vx: -2, vy: 4, size: 120, color: 'bg-pink-400' },
-      { id: 3, x: 500, y: 400, vx: 2, vy: -3, size: 60, color: 'bg-yellow-300' },
-      { id: 4, x: 200, y: 500, vx: -3, vy: -2, size: 100, color: 'bg-lime-400' },
-      { id: 5, x: 600, y: 150, vx: 4, vy: 1, size: 90, color: 'bg-violet-400' },
-    ];
-    setBalls(initialBalls);
-    const animate = () => {
-      if (!containerRef.current) return;
-      const { width, height } = containerRef.current.getBoundingClientRect();
-      setBalls((prev) => prev.map((b) => {
-        let { x, y, vx, vy, size } = b;
-        if (x - size / 2 + vx < 0 || x + size / 2 + vx > width) vx *= -1;
-        if (y - size / 2 + vy < 0 || y + size / 2 + vy > height) vy *= -1;
-        return { ...b, x: x + vx, y: y + vy, vx, vy };
-      }));
-      requestAnimationFrame(animate);
-    };
-    const id = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(id);
-  }, []);
-
   return (
     <div ref={containerRef} className="flex flex-col items-center justify-center h-screen relative bg-black overflow-hidden">
       {balls.map((ball) => (
@@ -92,6 +70,7 @@ const SignupPage = () => {
         <h1 className="text-3xl font-extrabold text-center text-white mb-10">회원가입</h1>
 
         <form onSubmit={handleSubmit(onSignupSubmit)} className="flex flex-col gap-6">
+          {/* 1단계: 이메일 */}
           {step === 1 && (
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-1.5">
@@ -102,6 +81,7 @@ const SignupPage = () => {
             </div>
           )}
 
+          {/* 2단계: 비밀번호 */}
           {step === 2 && (
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-1.5">
@@ -116,6 +96,7 @@ const SignupPage = () => {
             </div>
           )}
 
+          {/* 3단계: 닉네임 */}
           {step === 3 && (
             <div className="flex flex-col items-center gap-6">
               <div className="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center border border-white/20">

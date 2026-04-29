@@ -15,12 +15,12 @@ const MovieDetailPage = () => {
                 const [detailsResponse, creditsResponse] = await Promise.all([
                     axios.get(`https://api.themoviedb.org/3/movie/${movieId}?language=ko-KR`, {
                         headers: {
-                            Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjYzVjY2QxZjMyMDVlZmFjODkyYzVlNTgxNWY1MjY4OSIsIm5iZiI6MTc3NDk5Njk3OS43MTEsInN1YiI6IjY5Y2M0ZGYzYTI1M2YwYzcyNGVkNDdlOSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.APchjMzIRObS5T04QcUSNIveb8Kq3D0QGhwvpeJM0y0`
+                            Authorization: `Bearer ${import.meta.env.VITE_TMDB_TOKEN}`,
                         }
                     }),
                     axios.get(`https://api.themoviedb.org/3/movie/${movieId}/credits?language=ko-KR`, {
                         headers: {
-                            Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjYzVjY2QxZjMyMDVlZmFjODkyYzVlNTgxNWY1MjY4OSIsIm5iZiI6MTc3NDk5Njk3OS43MTEsInN1YiI6IjY5Y2M0ZGYzYTI1M2YwYzcyNGVkNDdlOSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.APchjMzIRObS5T04QcUSNIveb8Kq3D0QGhwvpeJM0y0`
+                            Authorization: `Bearer ${import.meta.env.VITE_TMDB_TOKEN}`,
                         }
                     })
                 ]);

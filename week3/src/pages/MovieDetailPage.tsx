@@ -52,8 +52,8 @@ export default function MovieDetailPage() {
     return <div className="text-white text-center mt-20 text-2xl font-bold">영화 정보를 불러올 수 없습니다 😢</div>;
   }
 
-  // 감독 정보만 필터링
-  const director = credits.crew.find((c) => c.job === 'Director');
+  
+  const director = credits?.crew.find((c) => c.job === 'Director');
 
   return (
     <div className="relative min-h-screen text-white pb-20">

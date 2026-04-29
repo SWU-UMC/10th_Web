@@ -21,16 +21,9 @@ export interface Genre {
   name: string;
 }
 
-export interface MovieDetail {
-  id: number;
-  title: string;
-  original_title: string;
-  overview: string;
-  poster_path: string;
-  backdrop_path: string; // 넓은 배경 이미지
-  vote_average: number;
-  release_date: string;
-  runtime: number; // 상영 시간
+export interface MovieDetail extends Movie {
+  backdrop_path: string | null; // null 가능성 추가해주면 더 안전해
+  runtime: number;
   genres: Genre[];
 }
 

@@ -14,3 +14,34 @@ export interface MovieResponse {
   total_pages: number;
   total_results: number;
 }
+
+
+export interface Genre {
+  id: number;
+  name: string;
+}
+
+export interface MovieDetail extends Movie {
+  backdrop_path: string | null; // null 가능성 추가해주면 더 안전해
+  runtime: number;
+  genres: Genre[];
+}
+
+export interface Cast {
+  id: number;
+  name: string;
+  character: string;
+  profile_path: string | null;
+}
+
+export interface Crew {
+  id: number;
+  name: string;
+  job: string;
+  profile_path: string | null;
+}
+
+export interface MovieCredits {
+  cast: Cast[];
+  crew: Crew[];
+}

@@ -1,3 +1,4 @@
+
 import TodoForm from './components/TodoForm';
 import TodoList from './components/TodoList';
 import { useTodo, TodoProvider } from './context/TodoContext';
@@ -33,6 +34,14 @@ function TodoApp() {
         />
       </div>
     </div>
+  );
+};
+
+function App() {
+  return (
+    <TodoProvider>
+      <TodoMain />
+    </TodoProvider>
   );
 }
 

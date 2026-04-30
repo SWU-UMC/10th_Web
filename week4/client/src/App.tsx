@@ -1,10 +1,11 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
 
-// 라우터 설정 객체를 따로 생성
 const router = createBrowserRouter([
-  { path: '/', element: <LoginPage /> },
-  { path: '/login', element: <LoginPage /> },
+  { path: "/", element: <LoginPage /> },
+  { path: "/login", element: <LoginPage /> },
+  { path: "/signup", element: <SignupPage /> },
 ]);
 
 function App() {

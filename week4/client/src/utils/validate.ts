@@ -1,30 +1,27 @@
-export type UserSigninInformation = {
-  email: string;
-  password: string;
-};
+import { z } from 'zod';
+
+// 회원가입 스키마: 서버 필수 필드(name, email, password) 
+export const signupSchema = z.object({
+  email: z.string()
+    .nonempty({ message: "이메일을 입력해주세요." })
+    .email({ message: "올바른 이메일 형식을 입력해주세요." }),
+  password: z.string()
+    .min(6, { message: "비밀번호는 6자 이상이어야 합니다." }),
+  confirmPassword: z.string()
+    .nonempty({ message: "비밀번호 재확인을 입력해주세요." }),
+  nickname: z.string() 
+    .min(2, { message: "닉네임은 2자 이상이어야 합니다." }),
+}).refine((data) => data.password === data.confirmPassword, {
+  path: ["confirmPassword"],
+  message: "비밀번호가 일치하지 않습니다.",
+});
+
+export type SignupFormValues = z.infer<typeof signupSchema>;
 
 
-type FormErrors = Record<keyof UserSigninInformation, string>;
+export const loginSchema = z.object({
+  email: z.string().email({ message: "유효하지 않은 이메일 형식입니다." }),
+  password: z.string().min(6, { message: "비밀번호는 최소 6자 이상이어야 합니다." }),
+});
 
-export const validateLogin = (values: UserSigninInformation): FormErrors => {
-  const errors: FormErrors = {
-    email: '',
-    password: '',
-  };
-
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  if (!values.email) {
-    errors.email = "이메일을 입력해주세요.";
-  } else if (!emailRegex.test(values.email)) {
-    errors.email = "유효하지 않은 이메일 형식입니다.";
-  }
-
-  if (!values.password) {
-    errors.password = "비밀번호를 입력해주세요.";
-  } else if (values.password.length < 6) {
-    errors.password = "비밀번호는 최소 6자 이상이어야 합니다.";
-  }
-
-  return errors;
-};
+export type LoginFormValues = z.infer<typeof loginSchema>;

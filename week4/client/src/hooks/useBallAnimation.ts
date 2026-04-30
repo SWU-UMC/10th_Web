@@ -1,14 +1,6 @@
 import { useState, useEffect, type RefObject } from 'react';
 
-interface Ball {
-  id: number;
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-  size: number;
-  color: string;
-}
+interface Ball { id: number; x: number; y: number; vx: number; vy: number; size: number; color: string; }
 
 export const useBallAnimation = (containerRef: RefObject<HTMLDivElement | null>) => {
   const [balls, setBalls] = useState<Ball[]>([]);
@@ -23,28 +15,20 @@ export const useBallAnimation = (containerRef: RefObject<HTMLDivElement | null>)
     ];
     setBalls(initialBalls);
 
-    
     const animate = () => {
       if (!containerRef.current) return;
       const { width, height } = containerRef.current.getBoundingClientRect();
-
-      setBalls((prevBalls) =>
-        prevBalls.map((ball) => {
-          let { x, y, vx, vy, size } = ball;
-          const radius = size / 2;
-
-          if (x - radius + vx < 0 || x + radius + vx > width) vx *= -1;
-          if (y - radius + vy < 0 || y + radius + vy > height) vy *= -1;
-
-          return { ...ball, x: x + vx, y: y + vy, vx, vy };
-        })
-      );
+      setBalls((prev) => prev.map((b) => {
+        let { x, y, vx, vy, size } = b;
+        if (x - size / 2 + vx < 0 || x + size / 2 + vx > width) vx *= -1;
+        if (y - size / 2 + vy < 0 || y + size / 2 + vy > height) vy *= -1;
+        return { ...b, x: x + vx, y: y + vy, vx, vy };
+      }));
       requestAnimationFrame(animate);
     };
-
-    const animationId = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(animationId);
+    const id = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(id);
   }, [containerRef]);
 
-  return balls; 
+  return balls;
 };

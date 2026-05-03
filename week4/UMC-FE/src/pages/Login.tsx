@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import useForm from '../hooks/useForm';
 import { validateSignin, type UserSigninInfomation } from '../utils/validate';
+import { postSignin } from '../apis/auth';
 
 const Login = () => {
     
@@ -12,7 +13,12 @@ const Login = () => {
         validate: validateSignin,
     });
 
-    const handleSubmit = () => {};
+    const handleSubmit = async() => {
+        const response = await postSignin(values);
+        localStorage.setItem("accessToken", response.data.accessToken);
+
+        console.log(response);
+    }
     const canSubmit = Object.values(errors).every((error) => error === '');
 
     return (

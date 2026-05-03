@@ -3,8 +3,10 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import HomePage from './pages/HomePage'
 import NotFoundPage from './pages/NotFoundPage'
 import Login from './pages/Login'
+import SignupPage from './pages/SignupPage'
+import MyPage from './pages/myPage'
 import HomeLayout from './layouts/HomeLayout'
-import SignupPage from './layouts/SignupPage'
+
 
 // 1. 홈페이지
 // 2. 로그인 페이지
@@ -19,6 +21,7 @@ const router = createBrowserRouter([
       {index: true, element: <HomePage />},
       {path: 'login', element: <Login />},
       {path: 'signup', element: <SignupPage />},
+      {path: 'my', element: <MyPage />},
     ]
   },
 ])

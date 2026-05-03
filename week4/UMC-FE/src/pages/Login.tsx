@@ -1,18 +1,11 @@
 import useForm from '../hooks/useForm';
 import { validateSignin, type UserSigninInfomation } from '../utils/validate';
 import { useAuth } from '../context/AuthContext';
-import { use, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
-    const { login, accessToken } = useAuth();
+    const { login } = useAuth();
     const navigate = useNavigate();
-
-    useEffect(() => {
-        if (accessToken) {
-            navigate("/");
-        }
-    }, [accessToken, navigate]);
 
     const { getInputProps, errors, touched, values } = useForm<UserSigninInfomation>({
         initialValues: {
@@ -23,7 +16,8 @@ const Login = () => {
     });
 
     const handleSubmit = async() => {
-        await login(values);
+        const ok = await login(values);
+        if (ok) navigate('/my');
     }
     const canSubmit = Object.values(errors).every((error) => error === '');
 

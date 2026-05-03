@@ -1,3 +1,5 @@
+import { LOCAL_STORAGE_KEY } from "../constants/key";
+import { useLocalStorage } from "../hooks/useLocalStorage";
 import type {RequestSigninDto, RequestSignupDto, ResponseMyInfoDto, ResponseSigninDto, ResponseSignupDto} from "../types/auth";
 import {axiosInstance} from "./axios";
 
@@ -22,12 +24,17 @@ export const getMyInfo = async ():Promise<ResponseMyInfoDto> => {
         "/v1/users/me", 
         {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+                Authorization: `Bearer ${localStorage.getItem(LOCAL_STORAGE_KEY.accessToken)}`,
             }
         }
     )
 
 
 
+    return data;
+}
+
+export const postLogout = async () => {
+    const { data } = await axiosInstance.post('v1/auth/signout')
     return data;
 }

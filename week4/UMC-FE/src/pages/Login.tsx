@@ -1,10 +1,19 @@
-import { useState } from 'react';
 import useForm from '../hooks/useForm';
 import { validateSignin, type UserSigninInfomation } from '../utils/validate';
-import { postSignin } from '../apis/auth';
+import { useAuth } from '../context/AuthContext';
+import { use, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
-    
+    const { login, accessToken } = useAuth();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (accessToken) {
+            navigate("/");
+        }
+    }, [accessToken, navigate]);
+
     const { getInputProps, errors, touched, values } = useForm<UserSigninInfomation>({
         initialValues: {
             email: "",
@@ -14,10 +23,7 @@ const Login = () => {
     });
 
     const handleSubmit = async() => {
-        const response = await postSignin(values);
-        localStorage.setItem("accessToken", response.data.accessToken);
-
-        console.log(response);
+        await login(values);
     }
     const canSubmit = Object.values(errors).every((error) => error === '');
 

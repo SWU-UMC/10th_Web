@@ -1,0 +1,63 @@
+import { validateSignin } from "../pages/utils/validate";
+import type{ UserSigninInformation } from "../pages/utils/validate";
+import {useAuth} from "../src/context/AuthContext";
+import useForm from "../hooks/useForm";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
+const LoginPage=()=> {
+    const{login, accessToken}=useAuth();
+    const navigate=useNavigate();
+    useEffect(()=>{
+        if(accessToken){
+            navigate("/");
+        }
+    },[navigate, accessToken]);
+    const {values, errors, touched, getInputProps}=useForm<UserSigninInformation>({
+        initialValue:{
+            email:"",
+            password:"",
+        },
+        validate: validateSignin,
+    });
+    const handleSubmit=async()=>{
+        await login(values);
+        
+    };
+    const handleGoogleLogin=()=>{
+        window.location.href=import.meta.env.VITE_SERVER_API_URL + "/v1/auth/google/login";
+    };
+    const isDisabled=
+    Object.values(errors || {}).some(error=>error.length>0) ||
+    Object.values(values).some((value)=>value==="");
+
+    
+    return (
+        <div className="flex flex-col items-center justify-center h-full gap-4">
+            <div className="flex flex-col gap-3">
+                <input 
+                {...getInputProps("email")}
+                type={"email"} className={"border border-[#ccc] w-[300px] p-[10px] focus: border-[#807bff] rounded-sm"} 
+                placeholder={"이메일"}/>
+                {errors?.email && touched?.email &&(<div className="text-red-500 text-sm">{errors.email}</div>)}
+                <input
+                {...getInputProps("password")}
+                type={"password"} className={"border border-[#ccc] w-[300px] p-[10px] focus: border-[#807bff] rounded-sm"} 
+                placeholder={"비밀번호"}/>
+                
+                <button type="button" onClick={handleSubmit} disabled={false} className="w-full bg-green-600 text-white py-3 rounded-md text-lg font-medium hover: bg-green-700 transition-colors cursor-pointer disabled:bg-gray-300">
+                    로그인</button>  
+                    <button
+                        type="button" onClick={handleGoogleLogin}
+                        disabled={isDisabled} 
+                        className="w-full bg-gray-300 text-white py-3 rounded-md text-lg font-medium hover: bg-gray-400 transition-colors cursor-pointer disabled:bg-gray-300"
+                        ><div className="flex items-center justify-center">
+                            <span>구글 로그인</span>
+                        </div>
+                    </button>
+            </div>
+        </div>
+    );//로그인 하기 전에는 false여서 녹색, 하고 나서는 true 여서 회색 
+};
+
+export default LoginPage;

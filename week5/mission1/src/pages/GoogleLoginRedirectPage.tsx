@@ -1,6 +1,6 @@
 import {useLocalStorage}from "../hooks/useLocalStorage"
 import {useEffect}from "react";
-import {LOCAL_STORAGE_KEY}from "../src/constants/key";
+import {LOCAL_STORAGE_KEY}from "../constants/key";
 
 const GoogleLoginRedirectPage=()=>{
     const {setItem:setAccessToken}=useLocalStorage(LOCAL_STORAGE_KEY.ACCESS_TOKEN);

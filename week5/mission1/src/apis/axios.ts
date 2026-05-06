@@ -1,4 +1,4 @@
-import { useLocalStorage } from "../../hooks/useLocalStorage";
+import { useLocalStorage } from "../hooks/useLocalStorage";
 import axios, { type InternalAxiosRequestConfig } from "axios";
 import { LOCAL_STORAGE_KEY } from "../constants/key";
 interface CustomInternalAxiosRequestConfig extends InternalAxiosRequestConfig {

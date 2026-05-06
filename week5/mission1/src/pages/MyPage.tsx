@@ -1,7 +1,7 @@
 import { useEffect,useState } from "react";
-import { getMyInfo } from "../src/apis/auth";
-import type { ResponseMyInfoDto } from "../src/types/auth";
-import { useAuth } from "../src/context/AuthContext";
+import { getMyInfo } from "../apis/auth";
+import type { ResponseMyInfoDto } from "../types/auth";
+import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const  MyPage=()=>{

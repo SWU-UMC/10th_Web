@@ -1,4 +1,4 @@
-import { useLocalStorage } from "../../hooks/useLocalStorage";
+import { useLocalStorage } from "../hooks/useLocalStorage";
 import { LOCAL_STORAGE_KEY } from "../constants/key";
 import type { RequestSigninDto } from "../types/auth";
 import {createContext} from "react";

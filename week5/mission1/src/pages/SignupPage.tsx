@@ -2,7 +2,7 @@ import {z} from "zod";
 import {useForm} from "react-hook-form";
 import type {SubmitHandler} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import{postSignup}from "../src/apis/auth";
+import{postSignup}from "../apis/auth";
 
 
 const schema=z.object({

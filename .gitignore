@@ -13,6 +13,8 @@
 .DS_Store
 Thumbs.db
 week5/server/
+week4/
+week6/server/
 
 # Vite 관련 캐시 및 빌드 결과물 무시
 **/.vite/

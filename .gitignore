@@ -13,3 +13,11 @@
 .DS_Store
 Thumbs.db
 week5/server/
+
+# Vite 관련 캐시 및 빌드 결과물 무시
+**/.vite/
+**/dist/
+
+# 패키지 매니저 관련 (이미 있다면 중복 체크!)
+node_modules/
+package-lock.json (선택사항: 보통은 올리지만, 꼬였을 땐 무시하기도 해)

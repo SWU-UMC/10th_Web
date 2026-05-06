@@ -1,0 +1,60 @@
+import { useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import axios from 'axios';
+import { loginSchema, type LoginFormValues } from '../utils/validate';
+import { useBallAnimation } from '../hooks/useBallAnimation';
+
+const LoginPage = () => {
+  const navigate = useNavigate();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const balls = useBallAnimation(containerRef); // 훅 사용
+
+  const { register, handleSubmit, formState: { errors } } = useForm<LoginFormValues>();
+
+  const onLoginSubmit = async (data: LoginFormValues) => {
+    try {
+      const response = await axios.post('http://localhost:8000/v1/auth/signin', {
+        email: data.email,
+        password: data.password,
+      });
+
+      if (response.data.status) {
+        localStorage.setItem('accessToken', response.data.data.accessToken);
+        alert(`${response.data.data.name}님 환영합니다!`);
+        navigate('/'); 
+      }
+    } catch (error: any) {
+      alert(error.response?.data?.message || '로그인에 실패했습니다.');
+    }
+  };
+
+  return (
+    <div ref={containerRef} className="flex flex-col items-center justify-center h-screen relative bg-black overflow-hidden">
+      {balls.map((ball) => (
+        <div key={ball.id} className={`absolute rounded-full opacity-30 blur-2xl z-0 ${ball.color}`}
+          style={{ width: ball.size, height: ball.size, left: ball.x - ball.size / 2, top: ball.y - ball.size / 2 }} />
+      ))}
+      <div className="w-full max-w-sm p-10 bg-white/5 backdrop-blur-xl border border-white/20 rounded-[30px] shadow-2xl relative z-10">
+        <button onClick={() => navigate(-1)} className="absolute top-6 left-6 text-white/50 hover:text-white font-bold">&lt;</button>
+        <p className="text-center font-bold text-white/60 tracking-[0.3em] text-xs mt-2">DORI</p>
+        <h1 className="text-3xl font-extrabold text-center text-white mb-10">로그인</h1>
+        
+        <form onSubmit={handleSubmit(onLoginSubmit)} className="flex flex-col gap-6">
+          <div className="flex flex-col gap-1.5">
+            <input {...register("email")} placeholder="이메일" className="w-full p-4 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:ring-2 focus:ring-cyan-300" />
+            {errors.email && <p className="text-red-400 text-xs">{errors.email.message}</p>}
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <input type="password" {...register("password")} placeholder="비밀번호" className="w-full p-4 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:ring-2 focus:ring-pink-300" />
+            {errors.password && <p className="text-red-400 text-xs">{errors.password.message}</p>}
+          </div>
+          <button type="submit" className="w-full p-4 mt-6 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-500 transition-all">로그인</button>
+          <button type="button" onClick={() => navigate('/signup')} className="text-center text-white/40 text-sm hover:text-white">회원가입 하러가기</button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default LoginPage;

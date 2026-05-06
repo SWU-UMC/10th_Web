@@ -1,10 +1,10 @@
 import {useLocalStorage}from "../hooks/useLocalStorage"
 import {useEffect}from "react";
-import {LOCAL_STROAGE_KEY}from "../src/constants/key";
+import {LOCAL_STORAGE_KEY}from "../src/constants/key";
 
 const GoogleLoginRedirectPage=()=>{
-    const {setItem:setAccessToken}=useLocalStorage(LOCAL_STROAGE_KEY.ACCESS_TOKEN);
-    const {setItem:setRefreshToken}=useLocalStorage(LOCAL_STROAGE_KEY.REFRESH_TOKEN);
+    const {setItem:setAccessToken}=useLocalStorage(LOCAL_STORAGE_KEY.ACCESS_TOKEN);
+    const {setItem:setRefreshToken}=useLocalStorage(LOCAL_STORAGE_KEY.REFRESH_TOKEN);
     useEffect(()=>{
         const urlParams=new URLSearchParams(window.location.search);
         const accessToken=urlParams.get("LOCAL_STORAGE_KEY.accessToken");

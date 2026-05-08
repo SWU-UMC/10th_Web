@@ -42,11 +42,17 @@ const SignupPage = () => {
   const onSubmit:SubmitHandler<FormFields>=async(data)=>{
     //passwordcheck 값은 안 보내고 싶을 때(그걸 빼고)
     const{passwordCheck, ... rest}=data;
-    const response=await postSignup({
+    try {
+      const response=await postSignup({
   ...rest,
   avatar: "",});
-    
-    console.log(response);
+      
+      console.log(response);
+      alert('회원가입이 완료되었습니다!');
+    } catch (error) {
+      console.error('회원가입 실패:', error);
+      alert('회원가입에 실패했습니다. 다시 시도해주세요.');
+    }
   }
 
   return (

@@ -10,7 +10,7 @@ const LoginPage=()=> {
     const navigate=useNavigate();
     useEffect(()=>{
         if(accessToken){
-            navigate("/");
+            navigate("/protected");
         }
     },[navigate, accessToken]);
     const {values, errors, touched, getInputProps}=useForm<UserSigninInformation>({
@@ -49,8 +49,7 @@ const LoginPage=()=> {
                     로그인</button>  
                     <button
                         type="button" onClick={handleGoogleLogin}
-                        disabled={isDisabled} 
-                        className="w-full bg-gray-300 text-white py-3 rounded-md text-lg font-medium hover: bg-gray-400 transition-colors cursor-pointer disabled:bg-gray-300"
+                        className="w-full bg-blue-300 text-white py-3 rounded-md text-lg font-medium hover: bg-blue-400 transition-colors cursor-pointer disabled:bg-gray-300 "
                         ><div className="flex items-center justify-center">
                             <span>구글 로그인</span>
                         </div>

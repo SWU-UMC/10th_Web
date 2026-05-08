@@ -23,19 +23,19 @@ const publicRoutes:RouteObject[]=[
       {index:true, element: <HomePage/>}, //홈 경로, intdex: true 라는 것은 path:/이 두번 쓰일 수 없어서 부여
       {path:"login",element:<LoginPage/>},
       {path: 'signup', element: <SignupPage/>},
-      {path:"v1/auth/google/callback",element:<GoogleLoginRedirectPage/>}
+      {path:"/v1/auth/google/callback",element:<GoogleLoginRedirectPage/>}
     ]
   }
 ];
 //protectedRoutes: 인증이 필요한 라우트
 const protectedRoutes:RouteObject[]=[
   {
-    path:"/protected",
+    path:"/",
     element: <ProtectedLayout/>, 
     errorElement: <NotFoundPage/>,
     children:[
       {
-        index:true,
+        path:"my",
         element: <MyPage/>,
       }
     ]

@@ -9,6 +9,7 @@ let refreshPromise: Promise<string> | null = null;
 
 export const axiosInstance=axios.create({
     baseURL:import.meta.env.VITE_SERVER_API_URL,
+    withCredentials:true, //쿠키 기반 인증을 사용하는 경우, 자격 증명(쿠키)을 요청과 함께 보내도록 설정
     
 });
 //요청 인터셉터: 모든 요청 전에 accessToken을 Authorization 헤더에 자동으로 추가한다

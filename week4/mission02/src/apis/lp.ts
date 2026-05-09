@@ -1,5 +1,5 @@
 import type { PaginationDto } from "../types/common";
-import type { ResponseLpListDto } from "../types/ip";
+import type { ResponseLpListDto } from "../types/lp";
 import { axiosInstance } from "./axios";
 
 

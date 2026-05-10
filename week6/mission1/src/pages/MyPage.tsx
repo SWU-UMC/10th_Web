@@ -11,20 +11,20 @@ const  MyPage=()=>{
 
     useEffect(() => {
     const getData = async () => {
-        const response = await getMyInfo();
-        setData(response);
+    const response = await getMyInfo();
+    setData(response);
     };
 
-    getData();
-    }, []);
-    const handleLogout=async()=>{
+        getData();
+        }, []);
+        const handleLogout=async()=>{
         await logout();
         navigate('/');
     };
     return (
         <div>
-          <h1>{data?.data.name}님 환영합니다.</h1>
-          <h1>{data?.data.email}</h1>
+          <h1>{data?.data?.name}님 환영합니다.</h1>
+          <h1>{data?.data?.email}</h1>
 
           <button className="cursor-pointer bg-blue-300 rounded-sm p-5 hover:scale-90"
            onClick={handleLogout}>로그아웃</button>

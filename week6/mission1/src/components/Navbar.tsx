@@ -19,12 +19,12 @@ const Navbar = () => {
                         회원가입
                     </Link>
                     </>
-                )}//accessToken이 없을 때 로그인과 회원가입 링크를 보여줌
-
+                )}
             </div>
+
             {accessToken &&(
-            <Link to={'/myinfo'}
-                className="text=gray-700 dark:text-gray-300 hover:text-blue-500">
+            <Link to={'/my'}
+                className="text-gray-700 dark:text-gray-300 hover:text-blue-500">
                     마이페이지
             </Link>
                 

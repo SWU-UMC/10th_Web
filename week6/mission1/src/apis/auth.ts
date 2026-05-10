@@ -17,7 +17,7 @@ export const postSignin=async(body: RequestSigninDto):Promise<ResponseSigninDto>
     return data;
 };
 export const getMyInfo=async():Promise<ResponseMyInfoDto>=>{
-    const {data}=await axiosInstance.get("/v1/auth/myinfo",{
+    const {data}=await axiosInstance.get("/v1/auth/my",{
         
     });
     

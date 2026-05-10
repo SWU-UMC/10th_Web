@@ -12,16 +12,17 @@ export const axiosInstance=axios.create({
     
 });
 //요청 인터셉터: 모든 요청 전에 accessToken을 Authorization 헤더에 자동으로 추가한다
-axiosInstance.interceptors.request.use((config)=>{
-    const {getItem}=useLocalStorage(LOCAL_STORAGE_KEY.accessToken);
-    const accesstoken=getItem();
-    if(accesstoken){
-        config.headers.Authorization=`Bearer ${accesstoken}`;
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const accessToken = localStorage.getItem(LOCAL_STORAGE_KEY.accessToken);
+
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
     }
-    //수정도니 요청 설정을 반환함
-    return config;},
-    //요청 인터셉터가 실패하면 에러 뿜음
-    (error)=>Promise.reject(error),
+
+    return config;
+  },
+  (error) => Promise.reject(error)
 );
 //응답 인터셉터: 401 에러 발생->refresh 토큰을 통한 토큰 갱신을 처리함
 axiosInstance.interceptors.response.use(

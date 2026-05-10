@@ -47,7 +47,7 @@ export const AuthProvider = ({children}:PropsWithChildren) => {
             setAccessToken(newAccessToken);
             setRefreshToken(newRefreshToken);
             alert("로그인 성공");
-            window.location.href = "/myinfo";
+            window.location.href = "/my";
         }
     } catch (error) {
     console.error("로그인 오류", error);
@@ -55,18 +55,18 @@ export const AuthProvider = ({children}:PropsWithChildren) => {
 }
    }
    const logout=async()=>{
-    try{
-        await postLogout();
-        removeAccessTokenFromStorage();
-        removeRefreshTokenFromStorage();
-        setAccessToken(null);
-        setRefreshToken(null);
+        try{
+            await postLogout();
+            removeAccessTokenFromStorage();
+            removeRefreshTokenFromStorage();
+            setAccessToken(null);
+            setRefreshToken(null);
 
-        alert("로그아웃 성공")
-    }catch(error){
-        console.error("로그아웃 오류", error);
-        alert("로그아웃 실패")
-    }
+            alert("로그아웃 성공")
+        }catch(error){
+            console.error("로그아웃 오류", error);
+            alert("로그아웃 실패")
+        }
    };
    return(
     <AuthContext.Provider value={{accessToken, refreshToken, login, logout}}>

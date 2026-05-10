@@ -55,19 +55,19 @@ export const AuthProvider = ({children}:PropsWithChildren) => {
 }
    }
    const logout=async()=>{
-        try{
-            await postLogout();
-            removeAccessTokenFromStorage();
-            removeRefreshTokenFromStorage();
-            setAccessToken(null);
-            setRefreshToken(null);
+        try {
+        await postLogout();
+        } catch (error) {
+        console.error("로그아웃 API 실패 (무시)", error);
+        } finally {
+        removeAccessTokenFromStorage();
+        removeRefreshTokenFromStorage();
+        setAccessToken(null);
+        setRefreshToken(null);
 
-            alert("로그아웃 성공")
-        }catch(error){
-            console.error("로그아웃 오류", error);
-            alert("로그아웃 실패")
+        alert("로그아웃 성공");
         }
-   };
+   };//여기 수정
    return(
     <AuthContext.Provider value={{accessToken, refreshToken, login, logout}}>
         {children}

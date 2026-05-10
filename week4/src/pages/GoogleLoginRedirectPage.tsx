@@ -3,10 +3,10 @@ import { useLocalStorage } from "../hooks/useLocalStorage";
 import { LOCAL_STORAGE_KEY } from "../constants/key";
 
 const GoogleLoginRedirectPage = () => {
-    const{setItem:setAccessToken} = useLocalStorage(
+    const { setItem: setAccessToken } = useLocalStorage(
         LOCAL_STORAGE_KEY.accessToken,
     );
-    const{setItem:setRefreshToken} = useLocalStorage(
+    const { setItem: setRefreshToken } = useLocalStorage(
         LOCAL_STORAGE_KEY.refreshToken,
     );
 

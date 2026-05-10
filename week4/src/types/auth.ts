@@ -18,7 +18,7 @@ export type ResponseSignupDto = CommonResponse<{
     avatar?: string;
     createdAt: Date;
     updatedAt: Date;
-    
+
 }>;
 
 //로그인

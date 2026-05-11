@@ -20,7 +20,7 @@ function useGetLpList({ cursor, search, order, limit }: PaginationDto) {
         gcTime: 1000 * 60 * 10, // 10분
 
         //조건에 따라 쿼리를 실행 여부 제어
-    //    refetchInterval: 10 *60, //10초마다 자동으로 refetch
+        //    refetchInterval: 10 *60, //10초마다 자동으로 refetch
     });
 
 

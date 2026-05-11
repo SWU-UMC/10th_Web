@@ -7,19 +7,12 @@ export type CommonResponse<T> = {
     data?: T;
 };
 
-export type CursorBasedResponse<T> = {
-    status: boolean;
-    statusCode: number;
-    message: string;
-    data?: T;
-    nextCursor: string | null;
+export type CursorBasedResponse<T> = CommonResponse<{
+    data: T;
+    nextCursor: number;
     hasNext: boolean;
-}
 
-enum PAGINATION_ORDER {
- "asc" ="asc",
- "desc" = "desc"
-}
+}>;
 
 export type PaginationDto = {
     cursor?: number;

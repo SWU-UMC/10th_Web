@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const MyPage = () => {
-    const navigae = useNavigate();
+    const navigate = useNavigate();
     const {logout} = useAuth();
     const [data, setData] = useState<ResponseMyInfoDto>([] as unknown as ResponseMyInfoDto);
 
@@ -21,7 +21,7 @@ const MyPage = () => {
 
     const handleLogout = async() => {
         await logout();
-        navigae("/");
+        navigate("/");
     }
 
     console.log(data.data?.name);

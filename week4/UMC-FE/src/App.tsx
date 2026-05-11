@@ -8,6 +8,10 @@ import MyPage from './pages/myPage'
 import HomeLayout from './layouts/HomeLayout'
 import { AuthProvider } from './context/AuthContext'
 import ProtectedLayout from './layouts/ProtectedLayout'
+import LpListPage from './pages/LpListPage'
+import LpDetailPage from './pages/LpDetailPage';
+import {QueryClient, QueryClientProvider, QueryErrorResetBoundary} from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 
 // 1. 홈페이지
@@ -24,6 +28,8 @@ const publicRoutes:RouteObject[] = [
       {index: true, element: <HomePage />},
       {path: 'login', element: <Login />},
       {path: 'signup', element: <SignupPage />},
+      {path: 'lps', element: <LpListPage />},
+      {path: 'lp/:lpId', element: <LpDetailPage />},
     ]
   },
 ]
@@ -46,9 +52,13 @@ const router = createBrowserRouter([...publicRoutes, ...protectedRoutes])
 
 function App() {
   return (
-    <AuthProvider>
-      <RouterProvider router={router} />
-    </AuthProvider>
+    <QueryClientProvider client={new QueryClient()}>
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
+
+      <ReactQueryDevtools initialIsOpen={false}/>
+    </QueryClientProvider>
   );
 }
 

@@ -1,21 +1,25 @@
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import api from '../apis/axios';
 import { useBallAnimation } from '../hooks/useBallAnimation';
+import LpCard from '../components/LpCard';
+import { useInView } from 'react-intersection-observer';
 
 const MyPage = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const containerRef = useRef<HTMLDivElement>(null);
   const balls = useBallAnimation(containerRef);
+  const { ref, inView } = useInView();
 
+  // 탭 상태: 'likes' (좋아요 한 LP), 'my' (내가 작성한 LP)
+  const [activeTab, setActiveTab] = useState<'likes' | 'my'>('likes');
+  const [sort, setSort] = useState<'asc' | 'desc'>('desc');
   const [isEditMode, setIsEditMode] = useState(false);
   const [editName, setEditName] = useState('');
-  const [editBio, setEditBio] = useState('');
-  const [isQuitModalOpen, setIsQuitModalOpen] = useState(false);
 
-  // 내 정보 조회
+  // 1. 내 정보 조회
   const { data: user } = useQuery({
     queryKey: ['userMe'],
     queryFn: async () => {
@@ -24,82 +28,103 @@ const MyPage = () => {
     }
   });
 
-  // 프로필 수정 Mutation
-  const updateProfile = useMutation({
-    mutationFn: (newData: any) => api.patch('/users/me', newData),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['userMe'] });
+  // 2. 탭에 따른 리스트 무한 스크롤 (명세서 v1/lps/likes/me 또는 v1/lps/user 사용)
+  const { data: listData, fetchNextPage, hasNextPage } = useInfiniteQuery({
+    queryKey: ['myList', activeTab, sort],
+    queryFn: async ({ pageParam = undefined }) => {
+      const endpoint = activeTab === 'likes' ? '/lps/likes/me' : '/lps/user';
+      const res = await api.get(endpoint, { params: { order: sort, cursor: pageParam, limit: 10 } });
+      return res.data.data;
+    },
+    initialPageParam: undefined,
+    getNextPageParam: (lastPage) => lastPage.hasNext ? lastPage.nextCursor : undefined,
+  });
+
+  // 3. 닉네임 변경 낙관적 업데이트
+  const updateNickname = useMutation({
+    mutationFn: (newName: string) => api.patch('/users/nickname', { nickname: newName }),
+    onMutate: async (newName) => {
+      await queryClient.cancelQueries({ queryKey: ['userMe'] });
+      const previousUser = queryClient.getQueryData(['userMe']);
+      queryClient.setQueryData(['userMe'], (old: any) => ({ ...old, name: newName }));
       setIsEditMode(false);
-    }
+      return { previousUser };
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['userMe'] }),
   });
 
-  // 회원 탈퇴 Mutation
-  const quitMutation = useMutation({
-    mutationFn: () => api.delete('/users/me'),
-    onSuccess: () => {
-      localStorage.clear();
-      navigate('/login');
-    }
-  });
-
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate('/login', { replace: true });
-  };
+  // 스크롤 감지
+  if (inView && hasNextPage) fetchNextPage();
 
   return (
-    <div ref={containerRef} className="flex flex-col items-center justify-center h-screen relative bg-black overflow-hidden text-white p-6">
-      {balls.map((ball) => (
-        <div key={ball.id} className={`absolute rounded-full opacity-20 blur-3xl z-0 ${ball.color}`}
-          style={{ width: ball.size, height: ball.size, left: ball.x - ball.size / 2, top: ball.y - ball.size / 2 }} />
-      ))}
+    <div ref={containerRef} className="min-h-screen bg-black text-white relative overflow-x-hidden">
+      {/* 배경 애니메이션 */}
+      <div className="fixed inset-0 pointer-events-none">
+        {balls.map((ball) => (
+          <div key={ball.id} className={`absolute rounded-full opacity-10 blur-3xl ${ball.color}`}
+            style={{ width: ball.size, height: ball.size, left: ball.x - ball.size / 2, top: ball.y - ball.size / 2 }} />
+        ))}
+      </div>
 
-      <div className="w-full max-w-sm p-10 glass-panel rounded-[40px] relative z-10 flex flex-col items-center gap-8 border border-white/10">
-        <div className="w-24 h-24 rounded-full bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden">
-          <img src={user?.avatar || "https://api.dicebear.com/7.x/avataaars/svg?seed=Lucky"} alt="avatar" />
+      {/* 상단 프로필 섹션 */}
+      <div className="pt-20 pb-10 flex flex-col items-center gap-6 relative z-10">
+        <div className="w-32 h-32 rounded-full bg-white/5 border border-white/10 overflow-hidden">
+          <img src={user?.avatar || "https://api.dicebear.com/7.x/avataaars/svg?seed=Lucky"} className="w-full h-full object-cover" />
         </div>
-
-        <div className="text-center space-y-2">
+        
+        <div className="text-center">
           {isEditMode ? (
-            <div className="space-y-3">
-              <input value={editName} onChange={e => setEditName(e.target.value)} className="bg-white/5 border border-white/20 p-2 rounded-lg text-center w-full" placeholder="Name" />
-              <input value={editBio} onChange={e => setEditBio(e.target.value)} className="bg-white/5 border border-white/20 p-2 rounded-lg text-center w-full text-sm" placeholder="Bio" />
-              <div className="flex gap-2">
-                <button onClick={() => updateProfile.mutate({ name: editName, bio: editBio })} className="text-cyan-400 text-xs font-bold">저장</button>
-                <button onClick={() => setIsEditMode(false)} className="text-white/30 text-xs">취소</button>
-              </div>
+            <div className="flex items-center gap-2 border-b border-cyan-500">
+              <input value={editName} onChange={e => setEditName(e.target.value)} className="bg-transparent text-2xl font-black outline-none text-center" autoFocus />
+              <button onClick={() => updateNickname.mutate(editName)}>✔️</button>
             </div>
           ) : (
-            <>
-              <div className="flex items-center justify-center gap-2">
-                <p className="text-2xl font-black text-cyan-300">{user?.name}</p>
-                <button onClick={() => { setIsEditMode(true); setEditName(user?.name); setEditBio(user?.bio || ''); }}>⚙️</button>
-              </div>
-              <p className="text-sm text-white/40 italic">"{user?.bio || '자기소개가 없습니다'}"</p>
-              <p className="text-xs text-white/20">{user?.email}</p>
-            </>
+            <div className="flex items-center justify-center gap-2">
+              <p className="text-3xl font-black">{user?.name}</p>
+              <button onClick={() => { setIsEditMode(true); setEditName(user?.name); }} className="text-white/40 hover:text-white">⚙️</button>
+            </div>
           )}
-        </div>
-
-        <div className="w-full space-y-3">
-          <button onClick={() => navigate('/')} className="w-full p-4 bg-white/5 rounded-2xl font-bold hover:bg-white/10 transition-colors">홈으로</button>
-          <button onClick={handleLogout} className="w-full p-4 bg-white/5 rounded-2xl font-bold text-white/40 hover:text-white">로그아웃</button>
-          <button onClick={() => setIsQuitModalOpen(true)} className="w-full pt-4 text-[10px] text-white/10 hover:text-red-500">탈퇴하기</button>
+          <p className="text-cyan-400 font-bold mt-1 text-sm">프론트 짱</p>
+          <p className="text-white/20 text-xs mt-1">{user?.email}</p>
         </div>
       </div>
 
-      {/* 탈퇴 확인 모달 */}
-      {isQuitModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm">
-          <div className="glass-panel p-10 rounded-[30px] text-center border border-white/10">
-            <p className="text-xl font-bold mb-8">정말 탈퇴하시겠습니까?</p>
-            <div className="flex gap-4">
-              <button onClick={() => quitMutation.mutate()} className="flex-1 bg-white/10 py-3 rounded-xl hover:bg-red-500 transition-colors">예</button>
-              <button onClick={() => setIsQuitModalOpen(false)} className="flex-1 bg-pink-500 py-3 rounded-xl font-bold">아니오</button>
-            </div>
-          </div>
+      {/* 탭 메뉴  */}
+      <div className="flex justify-center border-b border-white/5 relative z-10">
+        <button 
+          onClick={() => setActiveTab('likes')}
+          className={`px-8 py-4 font-black text-sm transition-all ${activeTab === 'likes' ? 'text-white border-b-2 border-white' : 'text-white/30'}`}
+        >
+          내가 좋아요 한 LP
+        </button>
+        <button 
+          onClick={() => setActiveTab('my')}
+          className={`px-8 py-4 font-black text-sm transition-all ${activeTab === 'my' ? 'text-white border-b-2 border-white' : 'text-white/30'}`}
+        >
+          내가 작성한 LP
+        </button>
+      </div>
+
+      {/* 리스트 섹션 */}
+      <div className="max-w-5xl mx-auto p-8 relative z-10">
+        {/* 정렬 버튼 */}
+        <div className="flex justify-end mb-6 gap-2">
+          {['asc', 'desc'].map(o => (
+            <button key={o} onClick={() => setSort(o as any)} 
+              className={`px-4 py-1.5 rounded-lg text-xs font-bold border transition-all ${sort === o ? 'bg-white text-black border-white' : 'bg-transparent text-white/40 border-white/10'}`}>
+              {o === 'asc' ? '오래된순' : '최신순'}
+            </button>
+          ))}
         </div>
-      )}
+
+        {/* 그리드 리스트 */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+          {listData?.pages.map(page => 
+            page.data.map((lp: any) => <LpCard key={lp.id} lp={lp} />)
+          )}
+        </div>
+        <div ref={ref} className="h-20" />
+      </div>
     </div>
   );
 };

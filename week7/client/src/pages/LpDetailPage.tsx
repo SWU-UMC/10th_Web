@@ -6,132 +6,180 @@ import api from '../apis/axios';
 
 const LpDetailPage = () => {
   const { lpid } = useParams();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [order, setOrder] = useState<'asc' | 'desc'>('desc');
   const [commentInput, setCommentInput] = useState('');
-  const [editingId, setEditingId] = useState<number | null>(null);
-  const [editInput, setEditInput] = useState('');
   const { ref, inView } = useInView();
 
-  const myNickname = localStorage.getItem('nickname');
+  const lpIdNum = Number(lpid);
 
-  // 1. 상세 조회
+  // 1. 상세 데이터 조회
   const { data: lp, isLoading: isLpLoading } = useQuery({
-    queryKey: ['lp', lpid],
+    queryKey: ['lp', lpIdNum],
     queryFn: async () => {
-      const res = await api.get(`/lps/${lpid}`);
+      const res = await api.get(`/lps/${lpIdNum}`);
       return res.data.data;
     }
   });
 
-  // 2. 댓글 목록 (무한스크롤)
+  // toggleLike Mutation 부분만 이 로직으로 완전히 교체해봐!
+const toggleLike = useMutation({
+  mutationFn: async (isCurrentlyLiked: boolean) => {
+    return isCurrentlyLiked 
+      ? api.delete(`/lps/${lpIdNum}/likes`) 
+      : api.post(`/lps/${lpIdNum}/likes`);
+  },
+  onMutate: async (isCurrentlyLiked) => {
+    // 1. 진행 중인 모든 리패치 강제 취소 (매우 중요!)
+    await queryClient.cancelQueries({ queryKey: ['lp', lpIdNum] });
+    
+    const previousLp = queryClient.getQueryData(['lp', lpIdNum]);
+
+    // 2. UI 즉시 업데이트 (낙관적 업데이트)
+    queryClient.setQueryData(['lp', lpIdNum], (old: any) => {
+      if (!old) return old;
+      const currentLikes = old._count?.likes ?? 0;
+      return {
+        ...old,
+        isLiked: !isCurrentlyLiked,
+        _count: {
+          ...old._count,
+          likes: isCurrentlyLiked ? Math.max(0, currentLikes - 1) : currentLikes + 1
+        }
+      };
+    });
+
+    return { previousLp };
+  },
+  onError: (err: any, isCurrentlyLiked, context) => {
+    if (err.response?.status === 409) {
+      
+      console.warn("⚠️ 409 에러 발생: 서버와 무관하게 UI를 좋아요 상태로 고정합니다.");
+      queryClient.setQueryData(['lp', lpIdNum], (old: any) => ({
+        ...old,
+        isLiked: true
+      }));
+    } else {
+      // 진짜 통신 에러일 때만 롤백
+      queryClient.setQueryData(['lp', lpIdNum], context?.previousLp);
+      alert('좋아요 처리에 실패했어요!');
+    }
+  },
+  onSettled: (data, error) => {
+    
+    const isConflict = (error as any)?.response?.status === 409;
+
+    if (!isConflict) {
+      // 409 에러가 아닐 때만 0.5초 뒤에 동기화
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['lp', lpIdNum] });
+        queryClient.invalidateQueries({ queryKey: ['myList'] });
+      }, 500);
+    } else {
+      console.log("409 에러이므로 서버 동기화를 건너뛰고 로컬 UI를 유지합니다.");
+    }
+  }
+});
+
+  // 3. 댓글 목록 (무한스크롤)
   const { data: commentData, fetchNextPage, hasNextPage } = useInfiniteQuery({
-    queryKey: ['lpComments', lpid, order],
+    queryKey: ['lpComments', lpIdNum, order],
     queryFn: async ({ pageParam = undefined }) => {
-      const res = await api.get(`/lps/${lpid}/comments`, { params: { cursor: pageParam, limit: 10, order } });
+      const res = await api.get(`/lps/${lpIdNum}/comments`, { params: { cursor: pageParam, limit: 10, order } });
       return res.data.data;
     },
     initialPageParam: undefined,
     getNextPageParam: (lastPage) => lastPage.hasNext ? lastPage.nextCursor : undefined,
   });
 
-  // 3. 댓글 생성 Mutation
   const createComment = useMutation({
-    mutationFn: (content: string) => api.post(`/lps/${lpid}/comments`, { content }),
+    mutationFn: (content: string) => api.post(`/lps/${lpIdNum}/comments`, { content }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['lpComments', lpid] });
+      queryClient.invalidateQueries({ queryKey: ['lpComments', lpIdNum] });
       setCommentInput('');
     }
   });
 
-  // 4. 댓글 수정 Mutation
-  const updateComment = useMutation({
-    mutationFn: ({ cid, content }: { cid: number; content: string }) => 
-      api.patch(`/lps/${lpid}/comments/${cid}`, { content }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['lpComments', lpid] });
-      setEditingId(null);
-    }
-  });
-
-  // 5. 댓글 삭제 Mutation
-  const deleteComment = useMutation({
-    mutationFn: (cid: number) => api.delete(`/lps/${lpid}/comments/${cid}`),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['lpComments', lpid] })
-  });
-
   useEffect(() => { if (inView && hasNextPage) fetchNextPage(); }, [inView, hasNextPage]);
 
-  if (isLpLoading) return <div className="p-20 text-white animate-pulse text-center">유리 파편 조립 중...</div>;
+  if (isLpLoading) return <div className="p-20 text-white animate-pulse text-center font-black">Vinyl Loading...</div>;
 
   return (
-    <div className="flex flex-col items-center p-6 md:p-12 gap-8">
+    <div className="flex flex-col items-center p-6 md:p-12 gap-8 bg-black min-h-screen text-white">
       {/* LP 상세 카드 */}
-      <div className="glass-panel w-full max-w-3xl p-8 rounded-[40px] flex flex-col gap-8">
-        <h1 className="text-4xl font-black text-center">{lp?.title}</h1>
-        <div className="flex justify-center">
-          <img src={lp?.thumbnail} className="w-64 h-64 rounded-full shadow-[0_0_50px_rgba(0,0,0,0.5)] animate-float border-8 border-white/5" />
+      <div className="glass-panel w-full max-w-3xl p-12 rounded-[50px] flex flex-col items-center gap-10 border border-white/10 shadow-2xl relative">
+        <h1 className="text-5xl font-black text-center text-pink-500 uppercase tracking-tighter drop-shadow-lg">
+          {lp?.title}
+        </h1>
+        
+        <div className="relative group">
+          <div className="absolute inset-0 bg-pink-500/20 blur-[60px] rounded-full animate-pulse" />
+          <img 
+            src={lp?.thumbnail} 
+            className="w-72 h-72 rounded-full shadow-[0_0_80px_rgba(0,0,0,0.8)] animate-[spin_25s_linear_infinite] border-[12px] border-white/5 relative z-10" 
+          />
         </div>
-        <p className="text-white/70 text-center italic">"{lp?.content}"</p>
+        
+        <div className="flex flex-wrap justify-center gap-3">
+          {lp?.tags?.map((tag: any) => (
+            <span key={tag.id} className="px-5 py-2 bg-cyan-500/10 border border-cyan-500/20 rounded-full text-cyan-300 text-xs font-black tracking-widest shadow-inner">
+              #{tag.name}
+            </span>
+          ))}
+        </div>
+
+        <p className="text-white/50 text-center italic max-w-lg leading-relaxed font-medium">
+          "{lp?.content}"
+        </p>
+
+        {/* 💖 좋아요 버튼 섹션 */}
+        <div className="flex flex-col items-center gap-3 mt-6 bg-white/[0.03] p-8 rounded-[40px] border border-white/5 min-w-[160px] transition-all hover:bg-white/[0.06]">
+          <button 
+            onClick={() => {
+              if (!localStorage.getItem('accessToken')) {
+                alert('로그인이 필요해요!');
+                return navigate('/login');
+              }
+              toggleLike.mutate(!!lp?.isLiked);
+            }}
+            disabled={toggleLike.isPending}
+            className="group transition-transform active:scale-150 duration-300 ease-out outline-none"
+          >
+            <span className={`text-7xl transition-all ${lp?.isLiked ? 'text-pink-500 drop-shadow-[0_0_20px_rgba(236,72,153,0.7)]' : 'text-white/10 group-hover:text-white/30'}`}>
+              {lp?.isLiked ? '❤️' : '🤍'}
+            </span>
+          </button>
+          <span className="text-4xl font-black tabular-nums tracking-tighter text-white/90">
+            {lp?._count?.likes || 0}
+          </span>
+        </div>
       </div>
 
       {/* 댓글 섹션 */}
-      <div className="glass-panel w-full max-w-3xl p-8 rounded-[40px]">
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-bold">댓글</h3>
-          <div className="flex gap-2">
-            <button onClick={() => setOrder('desc')} className={`text-xs ${order === 'desc' ? 'text-cyan-400' : 'text-white/40'}`}>최신순</button>
-            <button onClick={() => setOrder('asc')} className={`text-xs ${order === 'asc' ? 'text-cyan-400' : 'text-white/40'}`}>오래된순</button>
-          </div>
-        </div>
-
-        {/* 작성란 */}
-        <div className="flex gap-3 mb-8">
+      <div className="glass-panel w-full max-w-3xl p-10 rounded-[50px] border border-white/10">
+        <h3 className="text-2xl font-black mb-8 text-cyan-400 uppercase tracking-widest">Comments</h3>
+        <div className="flex gap-4 mb-12">
           <input 
             value={commentInput} 
             onChange={(e) => setCommentInput(e.target.value)}
-            placeholder="댓글을 입력해주세요" 
-            className="flex-1 bg-white/5 border border-white/10 rounded-xl p-3 text-sm focus:border-cyan-500/50 outline-none" 
+            placeholder="Write a comment..." 
+            className="flex-1 bg-white/5 border border-white/10 rounded-3xl p-5 text-sm focus:border-pink-500/50 outline-none transition-all placeholder:text-white/20" 
           />
           <button 
             onClick={() => createComment.mutate(commentInput)}
-            className="bg-cyan-500/20 text-cyan-300 px-6 rounded-xl text-sm font-bold border border-cyan-500/30"
+            className="bg-pink-500 text-white px-10 rounded-3xl text-sm font-black shadow-lg hover:bg-pink-600 transition-all active:scale-95"
           >
-            작성
+            POST
           </button>
         </div>
 
-        {/* 댓글 목록 */}
-        <div className="space-y-4">
+        <div className="space-y-6">
           {commentData?.pages.map((page) =>
             page.data.map((comment: any) => (
-              <div key={comment.id} className="p-4 bg-white/5 rounded-2xl border border-white/5 group">
-                <div className="flex justify-between mb-2 text-sm">
-                  <span className="font-bold text-cyan-300">{comment.author.name}</span>
-                  <div className="flex gap-3 items-center">
-                    <span className="text-[10px] text-white/20">{new Date(comment.createdAt).toLocaleString()}</span>
-                    {comment.author.name === myNickname && (
-                      <div className="hidden group-hover:flex gap-2">
-                        <button onClick={() => { setEditingId(comment.id); setEditInput(comment.content); }}>✏️</button>
-                        <button onClick={() => deleteComment.mutate(comment.id)}>🗑️</button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                
-                {editingId === comment.id ? (
-                  <div className="flex gap-2">
-                    <input 
-                      value={editInput} 
-                      onChange={(e) => setEditInput(e.target.value)}
-                      className="flex-1 bg-white/10 border border-white/20 rounded-lg p-2 text-sm outline-none"
-                    />
-                    <button onClick={() => updateComment.mutate({ cid: comment.id, content: editInput })} className="text-cyan-400 text-xs">확인</button>
-                    <button onClick={() => setEditingId(null)} className="text-white/40 text-xs">취소</button>
-                  </div>
-                ) : (
-                  <p className="text-sm text-white/80">{comment.content}</p>
-                )}
+              <div key={comment.id} className="p-6 bg-white/[0.03] rounded-[30px] border border-white/5 transition-all hover:bg-white/[0.07]">
+                <p className="font-black text-cyan-300 text-xs mb-3 uppercase tracking-tighter">{comment.author.name}</p>
+                <p className="text-sm text-white/70 leading-relaxed font-medium">{comment.content}</p>
               </div>
             ))
           )}

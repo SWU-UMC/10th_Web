@@ -3,7 +3,6 @@ import useGetLpDetail from "../hooks/queries/useGetLpDetail";
 import { Heart } from "lucide-react";
 import useGetMyInfo from "../hooks/queries/useGetMyInfo";
 import { useAuth } from "../context/AuthContext.tsx";
-import { postLike, deleteLike } from "../apis/lp.ts";
 import useDeleteLike from "../hooks/mutations/useDeleteLike.ts";
 import usePostLike from "../hooks/mutations/usePostLike.ts"
 

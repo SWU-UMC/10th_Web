@@ -4,9 +4,12 @@ import { PAGINATION_ORDER } from "../enums/common";
 import { useInView } from "react-intersection-observer"
 import LpCard from "../components/LpCard/LpCard";
 import LpCardSkeletonList from "../components/LpCard/LpCardSkeletonList";
+import useDebounce from "../hooks/useDebounce";
+import { SEARCH_DEBOUNCE_DELAY } from "../constants/delay";
 
 const HomePage = () => {
   const [search, setSearch] = useState("");
+  const debouncedValue = useDebounce(search, SEARCH_DEBOUNCE_DELAY);
   // const { data, isPending, isError } = useGetLpList({
   // search,
   // limit: 50,
@@ -18,7 +21,7 @@ const HomePage = () => {
     isPending, 
     fetchNextPage, 
     isError
-  } = useGetInfiniteLpList(5, search, PAGINATION_ORDER.desc);
+  } = useGetInfiniteLpList(10, debouncedValue, PAGINATION_ORDER.asc);
 
   // ref, inView
   // ref -> 특정한 html 요소를  감시할 수 있다.
@@ -39,7 +42,12 @@ useEffect(() => {
 
   return (
     <div className="container mx-auto px-4 py-6">
-      <input value={search} onChange={(e) => setSearch(e.target.value)} />
+      <input 
+        className="border p-2 rounded-sm" 
+        placeholder="검색"
+        value={search} 
+        onChange={(e) => setSearch(e.target.value)} 
+      />
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {isPending && <LpCardSkeletonList count={20}/>}

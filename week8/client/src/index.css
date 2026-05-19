@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+
+@keyframes float {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(5deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+body {
+  margin: 0;
+  background: radial-gradient(circle at center, #101525 0%, #000000 100%);
+  min-height: 100vh;
+  overflow: hidden;
+  color: white;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@layer base {
+  body {
+    @apply bg-black;
+  }
+}
+
+/* 유리 컴포넌트 광택 효과 */
+.glass-panel {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+}
+
+/* 커스텀 스크롤바 */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}

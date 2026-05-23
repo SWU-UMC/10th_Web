@@ -4,10 +4,12 @@ import { PAGINATION_ORDER } from "../enums/common";
 import { useInView } from "react-intersection-observer";
 import { useEffect } from "react";
 import LpCard from "../components/LpCard/LpCard";
+import useDebounce from "../hooks/useDebounce";
 const HomePage=()=>{
     //const {data, isLoading, isError}=useCustomFetch("url");
     //const{data, isLoading, isError}=useGetLpLits(cursor, limit, search, order); 
     const [search, setSearch]=useState("");
+    const debouncedValue=useDebounce(search, 300); //훈 쓰고 0.3초 뒤에 데이터 요청이 가게
     const {
         data: lps,
         isFetching,
@@ -17,7 +19,7 @@ const HomePage=()=>{
         isError,
         } = useGetInfiniteLpList({
         limit: 50,
-        search,
+        search: debouncedValue,   //여기를 search에서 갈아끼움
         order: PAGINATION_ORDER.desc,
         });
         console.log(lps);
@@ -45,7 +47,7 @@ const HomePage=()=>{
 
     return( 
         <div className="container mx-auto px-4 py-6">
-            <input value={search} onChange={(e)=>setSearch(e.target.value)} />
+            <input className={"border p-4 mt-6"}value={search} onChange={(e)=>setSearch(e.target.value)} />
             <div className={"grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"}>
                 {lps?.pages
                     ?.map((page) => page.data)

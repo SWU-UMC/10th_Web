@@ -18,38 +18,40 @@ function useDeleteLike() {
     return useMutation({
         mutationFn: deleteLike,
 
-        onMutate: async (
-            lp: RequestLpDto
-        ): Promise<LikeContext> => {
+        onMutate: async (lp: RequestLpDto) => {
             await queryClient.cancelQueries({
                 queryKey: [QUERY_KEY.lps, lp.lpId],
             });
 
-            const previousLpPost =
+            const previousLpPost: ResponseLpDto | undefined =
                 queryClient.getQueryData<ResponseLpDto>([
                     QUERY_KEY.lps,
                     lp.lpId,
                 ]);
 
-            if (!previousLpPost) {
-                return { previousLpPost };
-            }
-
-            const me =
+            const me: ResponseMyInfoDto | undefined =
                 queryClient.getQueryData<ResponseMyInfoDto>([
                     QUERY_KEY.myInfo,
                 ]);
 
-            const userId = Number(me?.data.id);
+            const userId: number = Number(me?.data.id);
 
-            const newLpPost: ResponseLpDto = {
+            const likedIndex: number =
+                previousLpPost?.data.likes.findIndex(
+                    (like: any) => like.userId === userId
+                ) ?? -1;
+
+            const newLpPost = {
                 ...previousLpPost,
                 data: {
-                    ...previousLpPost.data,
-                    likes: previousLpPost.data.likes.filter(
-                        (like: any) =>
-                            like.userId !== userId
-                    ),
+                    ...previousLpPost?.data,
+                    likes:
+                        likedIndex !== -1
+                            ? previousLpPost?.data.likes.filter(
+                                  (like: any) =>
+                                      like.userId !== userId
+                              )
+                            : previousLpPost?.data.likes,
                 },
             };
 

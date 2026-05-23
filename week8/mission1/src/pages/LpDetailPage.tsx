@@ -61,9 +61,8 @@ const LpDetailPage = () => {
                 }
             >
                 <Heart
-                    size={24} // 여기!
                     color={isLiked ? "red" : "black"}
-                    fill={isLiked ? "red" : "none"}
+                    fill={isLiked ? "red" : "transparent"}
                 />
             </button>
         </div>

@@ -18,42 +18,36 @@ function usePostLike() {
     return useMutation({
         mutationFn: postLike,
 
-        onMutate: async (
-            lp: RequestLpDto
-        ): Promise<LikeContext> => {
+        onMutate: async (lp: RequestLpDto) => {
             await queryClient.cancelQueries({
                 queryKey: [QUERY_KEY.lps, lp.lpId],
             });
 
-            const previousLpPost =
+            const previousLpPost: ResponseLpDto | undefined =
                 queryClient.getQueryData<ResponseLpDto>([
                     QUERY_KEY.lps,
                     lp.lpId,
                 ]);
 
-            if (!previousLpPost) {
-                return { previousLpPost };
-            }
-
-            const me =
+            const me: ResponseMyInfoDto | undefined =
                 queryClient.getQueryData<ResponseMyInfoDto>([
                     QUERY_KEY.myInfo,
                 ]);
 
-            const userId = Number(me?.data.id);
+            const userId: number = Number(me?.data.id);
 
-            const newLike = {
+            const newLike: { userId: number; lpId: number } = {
                 userId,
                 lpId: lp.lpId,
             };
 
-            const newLpPost: ResponseLpDto = {
+            const newLpPost = {
                 ...previousLpPost,
                 data: {
-                    ...previousLpPost.data,
+                    ...previousLpPost?.data,
                     likes: [
-                        ...previousLpPost.data.likes,
-                        newLike as any,
+                        ...(previousLpPost?.data.likes ?? []),
+                        newLike,
                     ],
                 },
             };

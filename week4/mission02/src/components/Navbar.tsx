@@ -11,7 +11,7 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
     const [search, setSearch] = useState("");
     const navigate = useNavigate();
 
-    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setSearch(value);
         navigate(`/?q=${value}`, { replace: true }); 

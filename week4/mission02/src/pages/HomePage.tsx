@@ -4,17 +4,19 @@ import { PAGINATION_ORDER } from "../enums/common";
 import { useInView } from "react-intersection-observer"
 import LpCard from "../components/LpCard/LpCard";
 import LpCardSkeletonList from "../components/LpCard/LpCardSkeletonList";
-import { useSearchParams } from "react-router-dom";
-import useDebounce from "../hooks/useDebounce"; 
-import { SEARCH_DEBOUNCE_DELAY } from "../constants/delay"; 
-
+import useDebounce from "../hooks/useDebounce";
+import { SEARCH_DEBOUNCE_DELAY } from "../constants/delay";
+import { useSearchParams } from "react-router-dom"; // 이거 추가
 
 const HomePage = () => {
   const [searchParams] = useSearchParams();
-  const search = searchParams.get("q") || ""; 
+  const search = searchParams.get("q") || "";
 
   const debouncedValue = useDebounce(search, SEARCH_DEBOUNCE_DELAY);
-
+  // const { data, isPending, isError } = useGetLpList({
+  // search,
+  // limit: 50,
+  // });
   const { 
     data:lps, 
     isFetching, 

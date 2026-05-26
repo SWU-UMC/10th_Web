@@ -48,22 +48,17 @@ const protectedRoutes: RouteObject[] = [
 
 const router = createBrowserRouter([...publicRoutes, ...protectedRoutes])
 
-// 💡 중요: QueryClient는 반드시 컴포넌트 바깥에서 선언해야 합니다!
-// App 내부에서 선언(new)하면 화면이 새로고침될 때마다 캐시가 전부 날아갑니다.
 const queryClient = new QueryClient();
 
 function App() {
-  // 💡 LP 글 작성 모달 열림/닫힘 상태
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         
-        {/* 전체 라우터 및 페이지 렌더링 */}
         <RouterProvider router={router} />
 
-        {/* 💡 전역 플로팅 글쓰기 버튼 (+) */}
         <button 
           onClick={() => setIsModalOpen(true)}
           className="fixed bottom-6 right-6 w-14 h-14 bg-blue-600 text-white rounded-full text-3xl font-bold shadow-lg hover:bg-blue-700 transition-colors flex items-center justify-center z-40"
@@ -71,7 +66,6 @@ function App() {
           +
         </button>
 
-        {/* 💡 모달 조건부 렌더링 */}
         {isModalOpen && (
           <LpCreateModal onClose={() => setIsModalOpen(false)} />
         )}

@@ -1,47 +1,45 @@
 import './App.css'
+import React, { useState } from 'react'; // 💡 useState 추가
 import { createBrowserRouter, RouterProvider, type RouteObject } from 'react-router-dom'
 import HomePage from './pages/HomePage'
 import NotFoundPage from './pages/NotFoundPage'
 import Login from './pages/Login'
 import SignupPage from './pages/SignupPage'
-import MyPage from './pages/myPage'
+import MyPage from './pages/myPage' // 경로 대소문자 확인 필요
 import HomeLayout from './layouts/HomeLayout'
 import { AuthProvider } from './context/AuthContext'
 import ProtectedLayout from './layouts/ProtectedLayout'
 import LpListPage from './pages/LpListPage'
 import LpDetailPage from './pages/LpDetailPage';
-import {QueryClient, QueryClientProvider, QueryErrorResetBoundary} from '@tanstack/react-query';
+import LpCreateModal from './components/LpCreateModal'; // 💡 모달 컴포넌트 임포트
+import { QueryClient, QueryClientProvider, QueryErrorResetBoundary } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
-
-// 1. 홈페이지
-// 2. 로그인 페이지
-// 3. 회원가입 페이지
-
 // publicRoutes: 인증 없이 접근 가능한 라우터
-const publicRoutes:RouteObject[] = [
+const publicRoutes: RouteObject[] = [
   {
     path: '/',
     element: <HomeLayout />,
     errorElement: <NotFoundPage />,
     children: [
-      {index: true, element: <HomePage />},
-      {path: 'login', element: <Login />},
-      {path: 'signup', element: <SignupPage />},
-      {path: 'lps', element: <LpListPage />},
-      {path: 'lp/:lpId', element: <LpDetailPage />},
+      { index: true, element: <HomePage /> },
+      { path: 'login', element: <Login /> },
+      { path: 'signup', element: <SignupPage /> },
+      { path: 'lps', element: <LpListPage /> },
+      { path: 'lp/:lpId', element: <LpDetailPage /> },
     ]
   },
 ]
+
 // protectedRoutes: 인증이 필요한 라우터
-const protectedRoutes:RouteObject[] = [
+const protectedRoutes: RouteObject[] = [
   {
     path: "/",
     element: <ProtectedLayout />,
     errorElement: <NotFoundPage />,
     children: [
       {
-        path:'my',
+        path: 'my',
         element: <MyPage />
       }
     ]
@@ -50,14 +48,37 @@ const protectedRoutes:RouteObject[] = [
 
 const router = createBrowserRouter([...publicRoutes, ...protectedRoutes])
 
+// 💡 중요: QueryClient는 반드시 컴포넌트 바깥에서 선언해야 합니다!
+// App 내부에서 선언(new)하면 화면이 새로고침될 때마다 캐시가 전부 날아갑니다.
+const queryClient = new QueryClient();
+
 function App() {
+  // 💡 LP 글 작성 모달 열림/닫힘 상태
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
-    <QueryClientProvider client={new QueryClient()}>
+    <QueryClientProvider client={queryClient}>
       <AuthProvider>
+        
+        {/* 전체 라우터 및 페이지 렌더링 */}
         <RouterProvider router={router} />
+
+        {/* 💡 전역 플로팅 글쓰기 버튼 (+) */}
+        <button 
+          onClick={() => setIsModalOpen(true)}
+          className="fixed bottom-6 right-6 w-14 h-14 bg-blue-600 text-white rounded-full text-3xl font-bold shadow-lg hover:bg-blue-700 transition-colors flex items-center justify-center z-40"
+        >
+          +
+        </button>
+
+        {/* 💡 모달 조건부 렌더링 */}
+        {isModalOpen && (
+          <LpCreateModal onClose={() => setIsModalOpen(false)} />
+        )}
+
       </AuthProvider>
 
-      <ReactQueryDevtools initialIsOpen={false}/>
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 }

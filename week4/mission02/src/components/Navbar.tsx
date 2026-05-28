@@ -12,7 +12,7 @@ const Navbar = () => {
                     to="/"
                     className="text-xl font-bold text-gray-900 dark:text-white"
                 >
-                    SpinningSpnning Dolimpan
+                돌려돌려LP판
                 </Link>
                 <div className="space-x-6">
                     {!accessToken && (

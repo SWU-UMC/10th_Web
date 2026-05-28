@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import useGetInfiniteLpList from "../hooks/queries/useGetInfiniteLpList";
 import { PAGINATION_ORDER } from "../enums/common";
 import { useInView } from "react-intersection-observer"
@@ -6,9 +6,12 @@ import LpCard from "../components/LpCard/LpCard";
 import LpCardSkeletonList from "../components/LpCard/LpCardSkeletonList";
 import useDebounce from "../hooks/useDebounce";
 import { SEARCH_DEBOUNCE_DELAY } from "../constants/delay";
+import { useSearchParams } from "react-router-dom"; // 이거 추가
 
 const HomePage = () => {
-  const [search, setSearch] = useState("");
+  const [searchParams] = useSearchParams();
+  const search = searchParams.get("q") || "";
+
   const debouncedValue = useDebounce(search, SEARCH_DEBOUNCE_DELAY);
   // const { data, isPending, isError } = useGetLpList({
   // search,
@@ -42,13 +45,6 @@ useEffect(() => {
 
   return (
     <div className="container mx-auto px-4 py-6">
-      <input 
-        className="border p-2 rounded-sm" 
-        placeholder="검색"
-        value={search} 
-        onChange={(e) => setSearch(e.target.value)} 
-      />
-
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {isPending && <LpCardSkeletonList count={20}/>}
         {lps?.pages

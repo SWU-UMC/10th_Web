@@ -1,8 +1,17 @@
+import { Provider } from 'react-redux';
+import store from './store/store';
 import './App.css';
+import Navbar from './components/Navbar';
+import CartList from './components/CartList';
+import PriceBox from './components/PriceBox';
 
 function App() {
   return (
-    <p className="text-blue-500">hello kitty</p>
+    <Provider store={store}>
+      <Navbar />
+      <CartList />
+      <PriceBox />
+    </Provider>
   )
 };
 

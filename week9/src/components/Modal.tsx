@@ -1,20 +1,23 @@
-import { useDispatch, useSelector } from "../hooks/useCustomRedux";
-import { closeModal } from "../slices/modalSlice";
-import { clearCart } from "../slices/carSlice";
+import { useCartActions } from "../hooks/useCartStore";
+import { useModalStore } from "../hooks/useModalStore"; // Zustand 모달 스토어
 
 export default function Modal() {
-    const dispatch = useDispatch();
-    const { isOpen } = useSelector((state) => state.modal);
+    // 1. 리덕스 dispatch 대신 Zustand 스토어에서 함수 직접 가져오기
+    const { clearCart } = useCartActions();
+    const { isOpen, closeModal } = useModalStore();
 
+    // 2. 모달이 닫혀있으면 화면에 아무것도 그리지 않음 (기존 로직 유지)
     if (!isOpen) return null;
 
+    // 3. '네' 버튼 클릭 시 실행
     const handleConfirm = () => {
-        dispatch(clearCart());
-        dispatch(closeModal());
+        clearCart();   // 장바구니 비우기 함수 다이렉트 호출
+        closeModal();  // 모달 닫기 함수 다이렉트 호출
     };
 
+    // 4. '아니요' 또는 바깥 배경 클릭 시 실행
     const handleCancel = () => {
-        dispatch(closeModal());
+        closeModal();  // 모달 닫기 함수 다이렉트 호출
     };
 
     return (

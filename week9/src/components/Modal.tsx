@@ -4,19 +4,15 @@ import { clearCart } from "../slices/carSlice";
 
 export default function Modal() {
     const dispatch = useDispatch();
-    // useState 대신 Redux에서 모달의 열림 상태를 가져옴
     const { isOpen } = useSelector((state) => state.modal);
 
-    // 모달이 닫혀있으면 아무것도 렌더링하지 않음
     if (!isOpen) return null;
 
-    // "네" 버튼 클릭 시: 장바구니 비우고 모달 닫기
     const handleConfirm = () => {
-        dispatch(clearCart()); // 미션 3 조건: 기존 clearCart 액션 필수 활용
+        dispatch(clearCart());
         dispatch(closeModal());
     };
 
-    // "아니요" 버튼 클릭 시: 모달만 닫기
     const handleCancel = () => {
         dispatch(closeModal());
     };
@@ -63,4 +59,4 @@ export default function Modal() {
             </div>
         </div>
     );
-} // 🟢 Modal 함수의 닫는 중괄호가 여기에 위치해야 합니다!
+};

@@ -19,6 +19,11 @@ const Login = () => {
         const ok = await login(values);
         if (ok) navigate('/my');
     }
+
+    const handleGoogleLogin = () => {
+        window.location.href = import.meta.env.VITE_SERVER_API_URL + "/v1/auth/google/login";
+    }
+
     const canSubmit = Object.values(errors).every((error) => error === '');
 
     return (
@@ -60,6 +65,16 @@ const Login = () => {
                         }`}
                 >
                     로그인
+                </button>
+                <button
+                    type="button"
+                    onClick={handleGoogleLogin}
+                    className={`w-full py-3 rounded-md text-lg font-medium transition-all bg-blue-600 text-white hover:bg-blue-700 shadow-md`}
+                >
+                    <div className = "flex items-center justify-center gap-4">
+                        <img src="/images/google.svg" alt="Google Login" className="w-5 h-5" />
+                        <span>구글 로그인</span>
+                    </div>
                 </button>
             </div>
         </div>

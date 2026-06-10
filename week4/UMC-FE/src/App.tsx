@@ -11,9 +11,12 @@ import { AuthProvider } from './context/AuthContext'
 import ProtectedLayout from './layouts/ProtectedLayout'
 import LpListPage from './pages/LpListPage'
 import LpDetailPage from './pages/LpDetailPage';
-import LpCreateModal from './components/LpCreateModal'; // 💡 모달 컴포넌트 임포트
+import LpCreateModal from './components/LpCreateModal'; 
 import { QueryClient, QueryClientProvider, QueryErrorResetBoundary } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { Provider } from 'react-redux';
+import { store } from './store'; 
+import CartContainer from './components/CartContainer';
 
 // publicRoutes: 인증 없이 접근 가능한 라우터
 const publicRoutes: RouteObject[] = [
@@ -27,6 +30,7 @@ const publicRoutes: RouteObject[] = [
       { path: 'signup', element: <SignupPage /> },
       { path: 'lps', element: <LpListPage /> },
       { path: 'lp/:lpId', element: <LpDetailPage /> },
+      { path: 'cart', element: <CartContainer /> },
     ]
   },
 ]
@@ -54,26 +58,28 @@ function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        
-        <RouterProvider router={router} />
+    <Provider store={store}>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          
+          <RouterProvider router={router} />
 
-        <button 
-          onClick={() => setIsModalOpen(true)}
-          className="fixed bottom-6 right-6 w-14 h-14 bg-blue-600 text-white rounded-full text-3xl font-bold shadow-lg hover:bg-blue-700 transition-colors flex items-center justify-center z-40"
-        >
-          +
-        </button>
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="fixed bottom-6 right-6 w-14 h-14 bg-blue-600 text-white rounded-full text-3xl font-bold shadow-lg hover:bg-blue-700 transition-colors flex items-center justify-center z-40"
+          >
+            +
+          </button>
 
-        {isModalOpen && (
-          <LpCreateModal onClose={() => setIsModalOpen(false)} />
-        )}
+          {isModalOpen && (
+            <LpCreateModal onClose={() => setIsModalOpen(false)} />
+          )}
 
-      </AuthProvider>
+        </AuthProvider>
 
-      <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
+        <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
+    </Provider>
   );
 }
 

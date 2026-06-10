@@ -9,14 +9,14 @@ import { postLogout } from "../apis/auth";
 interface AuthContextType {
     accessToken: string | null;
     refreshToken: string | null;
-    login: (signInData: RequestSigninDto) => Promise<void>;
+    login: (signInData: RequestSigninDto) => Promise<boolean>;
     logout: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType>({
     accessToken: null,
     refreshToken: null,
-    login: async () => {},
+    login: async () => false,
     logout: async () => {},
 });
 
@@ -50,12 +50,14 @@ export const AuthProvider = ({children}) => {
                 setAccessTokenToStorage(newAccessToken);
                 setRefreshTokenToStorage(newRefreshToken);
                 alert("로그인 성공!");
-                window.location.href="/my";
+                return true;
             }
         } catch (error) {
             console.error("로그인 오류", error);
             alert("로그인 실패. 다시 시도해주세요.");
         }
+
+        return false;
     };
 
     const logout = async() => {

@@ -1,0 +1,13 @@
+{
+	"dependencies": {
+		"@tailwindcss/vite": "^4.2.2",
+		"clsx": "^2.1.1",
+		"react-router-dom": "^7.13.2",
+		"tailwindcss": "^4.2.2"
+	},
+	"scripts": {
+		"dev": "vite",
+		"build": "tsc && vite build",
+		"preview": "vite preview"
+	}
+}

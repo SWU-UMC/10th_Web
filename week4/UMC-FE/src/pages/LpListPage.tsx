@@ -5,6 +5,7 @@ import LpSkeletonList from "./LpSkeletonList";
 import ErrorRetry from "../components/ErrorRetry";
 import LpCard from "../components/LpCard";
 import LpCardSkeleton from "../components/LpCardSkeleton";
+import { useThrottle } from "../hooks/useThrottle";
 
 export interface Lp {
     data: any[];
@@ -20,6 +21,8 @@ export interface Lp {
 
 const LpListPage = () => {
     const [sort, setSort] = useState("latest");
+    const [scrollY, setScrollY] = useState(0);
+    const throttledScrollY = useThrottle(scrollY, 300);
     const observerRef = useRef<HTMLDivElement | null>(null);
 
     const {data, isLoading, isError, refetch, fetchNextPage, hasNextPage, isFetchingNextPage} = useInfiniteQuery({
@@ -31,6 +34,43 @@ const LpListPage = () => {
         },
         staleTime: 5 * 60 * 1000, // 5분
     });
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setScrollY(window.scrollY);
+        };
+        
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    useEffect(() => {
+        const windowHeight = window.innerHeight;
+        const documentHeight = document.documentElement.scrollHeight; 
+
+        if (throttledScrollY + windowHeight >= documentHeight - 200) {
+            if (hasNextPage && !isFetchingNextPage) {
+                console.log("👉 바닥 감지! 다음 페이지 데이터를 불러옵니다.");
+                fetchNextPage();
+            }
+        }
+    }, [throttledScrollY, hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+    if (isLoading) {
+        return (
+            <div>
+                <div className="flex justify-end gap-2 mb-4">
+                    <button className="font-bold text-gray-400">최신순</button>
+                    <button className="text-gray-400">오래된순</button>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                        <LpCardSkeleton key={`initial-skel-${i}`} />
+                    ))}
+                </div>
+            </div>
+        );
+    }
 
     useEffect(() => {
         const observer = new IntersectionObserver(

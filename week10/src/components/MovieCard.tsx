@@ -1,14 +1,17 @@
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { Movie } from '../types/movie';
 
 interface MovieCardProps {
   movie: Movie;
-  onClick: (movie: Movie) => void;
 }
 
-const MovieCard = ({ movie, onClick }: MovieCardProps) => {
+const MovieCard = React.memo(({ movie }: MovieCardProps) => {
+  const navigate = useNavigate();
+
   return (
     <div 
-      onClick={() => onClick(movie)}
+      onClick={() => navigate(`/movies/${movie.id}`)}
       className="bg-white rounded-lg shadow cursor-pointer hover:scale-105 transition-transform overflow-hidden"
     >
       <img 
@@ -22,6 +25,6 @@ const MovieCard = ({ movie, onClick }: MovieCardProps) => {
       </div>
     </div>
   );
-};
+});
 
 export default MovieCard;

@@ -1,5 +1,4 @@
-import { configureStore } from "@reduxjs/toolkit";
-import cartReducer from "./slices/cartSlice";
+import { configureStore } from "@reduxjs/toolkit";import cartReducer from "./slices/cartSlice";
 
 //1. 저장소 생성
 function createStore(){

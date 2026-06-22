@@ -1,0 +1,9 @@
+{
+  "v1": {
+    "auth": {
+      "signup": [],
+      "signin": [],
+      "myInfo": []
+    }
+  }
+}
